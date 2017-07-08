@@ -4,20 +4,22 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 
-public class Node {
+public class GThNode {
 	int id;
 	String name;
 //	ROLE role;
 	ArrayList<Service> services;
-	ArrayList<Edge> activeConnections;
-	ArrayList<Node>	peers;
-	boolean status;
+	ArrayList<GThEdge> activeConnections;
+	ArrayList<GThNode>	peers;
+	boolean attackStartNode;
+	int captureCost;
+	boolean valnerable;
 	
 	Vector profitVector;
 	
 	
 	
-	public Node(int id, String name, ROLE role) {
+	public GThNode(int id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -25,14 +27,14 @@ public class Node {
 		
 	}
 
-	public ArrayList<Node> scanOnlineNodes() {
-		ArrayList<Node> onlineList =new ArrayList<Node>();
+	public ArrayList<GThNode> scanOnlineNodes() {
+		ArrayList<GThNode> onlineList =new ArrayList<GThNode>();
 		//Todo searching goes here
 		
 		return onlineList;
 	}
 	
-	public boolean attack(Node node, Strategy strategy) {
+	public boolean attack(GThNode node, Strategy strategy) {
 		boolean successStatus = false;
 		
 		//attack
