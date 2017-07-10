@@ -1,6 +1,9 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Random;
+
+import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -8,6 +11,8 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class Game {
+	
+	Random rand;
 	
 	int numNodes;
 	int numServers;
@@ -24,6 +29,11 @@ public class Game {
 	ArrayList<GThEdge> edges;
 	ArrayList<Strategy> strategies;
 	
+//	ArrayList<> gameStatus;
+	
+	public Factory <GThNode> vertexFactory;
+	public Factory<GThEdge> edgeFactory;
+//    int nodeCount;
 
 
 //	public Game(int numServers, int numClients, int numAttackers) {
@@ -37,29 +47,61 @@ public class Game {
 //		
 //	}
 	
+	public Game() {
+		numNodes = 7;
+		initGraph();
+		GThNode n0 = nodes.get(0);
+		GThNode n3 = nodes.get(2);
+		GThNode n4 = nodes.get(5);
+		GThNode n7 = nodes.get(6);
+		GThNode n1 = nodes.get(1);
+		
+		ArrayList<GThNode> st1 = new ArrayList<>();
+		st1.add(n0);
+		st1.add(n3);
+		st1.add(n4);
+		st1.add(n7);
+		st1.add(n1);
+		Strategy attStr = creatAttackStrategy(st1);
+		
+		for (int j = 0; j < attStr.participants.size(); j++) {
+			logToConsole("Attack participant id", Integer.toString(attStr.participants.get(j).id));
+			
+		}
+		
+				
+	}
+	
 	
 
 
-	public void init() {
-		
+	public void initGraph() {
+		rand = new Random();
 		nodes = new ArrayList<GThNode>();
 		edges = new ArrayList<GThEdge>();
 		for (int i = 1; i <= numNodes; i++) {
 			GThNode n;
 			
-			if(i<numServers) {
-				n = new Server(i, "Server "+i);
+			
+			if(i<=numServers) {
+				n = new Server(i);
 		
 			}else
 			{
-				n= new Client(i,"Clients "+i);
+				n= new Client(i);
 	
 			}
+			if(i % 2 == 0 ) {
+				n.valnerable =true;
+
+				System.out.println("odd"+n.id);
+			}
+//				
 			nodes.add(n);
 			
 		}
 		
-		
+		GThNode inode;
 		for (int i = 0; i < nodes.size(); i++) {
 
 			
@@ -67,9 +109,22 @@ public class Game {
 				
 				if(i!=j) {
 	
-					GThEdge ed = new GThEdge(nodes.get(i),nodes.get(j));
+					//inode
+					inode = nodes.get(i);
 					
+					//
+					
+					
+					//get node services size n get a random service
+					Service s = inode.getAvaialableServices().get(rand.nextInt(inode.getAvaialableServices().size()));
+					//if not running add it
+					s.setStatus(true);
+					GThEdge ed = new GThEdge(inode,nodes.get(j));
+					inode.addEdge(ed);
+					nodes.get(j).addEdge(ed);
+					ed.addService(s);
 					edges.add(ed);
+					
 					
 				}
 			
@@ -78,8 +133,54 @@ public class Game {
 			
 		}
 		
+		vertexFactory = new Factory<GThNode>() { // My vertex factory
+            public GThNode create() {
+            		
+            		
+            		GThNode n = new GThNode(nodes.size()+1);
+            		nodes.add(n);
+            		numNodes = nodes.size();
+            		logToConsole(Integer.toString(nodes.size()), "node created");
+                return n;
+            }
+        };
+        edgeFactory = new Factory<GThEdge>() { // My edge factory
+            public GThEdge create() {
+                 
+            		
+                		GThEdge e =	new GThEdge(getLastNode(),getSecondLastNode() );
+//                		Service s = getLastNode().getAvaialableServices().get(1);
+//                		e.addService(s);
+                		logToConsole(Integer.toString(e.getEndNode().id), "edge from");
+                		edges.add(e);
+                		return e;
+            }
+        };
+        
+        
 		
 	}
+	
+	public void initStrategies(int numOfStrategies, Graph g) {
+		
+		
+		
+		
+	}
+	
+	public Strategy creatAttackStrategy(ArrayList<GThNode> nodelist) {
+		
+		return new AttackStrategy(nodelist);
+		
+		
+	}
+	
+	public Strategy populateRandStrategy() {
+		
+		return new Strategy(nodes.get(0), 5);
+	}
+	
+	
 
 
 	public void logToConsole(String s, String msg) {
@@ -143,23 +244,30 @@ public class Game {
 		
 	}
 
-	public Graph compeletGraph() {
-		Graph<GThNode, GThEdge> g = new SparseGraph<GThNode, GThEdge>();
-		
+	public Graph createCompeletGraph() {
 
+		Graph<GThNode, GThEdge> g = new SparseGraph<GThNode, GThEdge>();
+
+		 GThNode n;
+		 
 		for (int i = 0; i < edges.size(); i++) {
 			
 					 g.addEdge(edges.get(i),edges.get(i).startNode, edges.get(i).endNode, EdgeType.UNDIRECTED);
 
 			}
-						
-		logToConsole("INFO: ", "Graph with"+edges.size()+"created");
+				
+		logToConsole("\nINFO: ", "Graph with"+edges.size()+"created");
 		
 		return g;
 	}
 
 
-
+	public GThNode getLastNode() {
+		return nodes.get(nodes.size()-1);
+	}
+	public GThNode getSecondLastNode() {
+		return nodes.get(nodes.size()-2);
+	}
 
 	public int getNumNodes() {
 		return numNodes;
@@ -179,11 +287,21 @@ public class Game {
 		return numServers;
 	}
 
-
-
-
 	public void setNumServers(int numServers) {
+	
 		this.numServers = numServers;
+	}
+
+
+	//get numb of ports available
+	public int getTotalNumServices() {
+		int nServices = 0 ;
+		for (int i = 0; i < nodes.size(); i++) {
+			
+			nServices += nodes.get(i).getAvaialableServices().size();
+		}
+		
+		return nServices;
 	}
 
 
@@ -241,6 +359,8 @@ public class Game {
 	public void setNumEdges(int numEdges) {
 		this.numEdges = numEdges;
 	}
+	
+	
 	
 	
 	

@@ -1,19 +1,29 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GThEdge {
 	int id;
-	String onlineStatus;
-	int bandWidth; //total
-	int failRate;
+	
+	boolean onlineStatus;
+	final double bandWidth; //total
+	final double initial;
+	
 	GThNode startNode;
 	GThNode endNode;
-	ArrayList<Service> services;
+	
+	double failRate;
+	ArrayList<Service> sharedServices;
+	
 	public GThEdge(GThNode startNode, GThNode endNode) {
 		super();
 		this.startNode = startNode;
 		this.endNode = endNode;
+		sharedServices = new ArrayList<Service>();
+		this.bandWidth = startNode.maxServices>endNode.maxServices?endNode.maxServices:startNode.maxServices;
+		this.initial = startNode.availableServices.size()>endNode.availableServices.size()?endNode.availableServices.size():startNode.availableServices.size();
+		
 	}
 	public int getId() {
 		return id;
@@ -21,21 +31,16 @@ public class GThEdge {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getOnlineStatus() {
-		return onlineStatus;
-	}
-	public void setOnlineStatus(String onlineStatus) {
-		this.onlineStatus = onlineStatus;
-	}
-	public int getBandWidth() {
+	
+	public double getBandWidth() {
 		return bandWidth;
 	}
-	public void setBandWidth(int bandWidth) {
-		this.bandWidth = bandWidth;
-	}
-	public int getFailRate() {
-		return failRate;
-	}
+//	public void setBandWidth(int bandWidth) {
+//		this.bandWidth = bandWidth;
+//	}
+//	public int getFailRate() {
+//		return failRate;
+//	}
 	public void setFailRate(int failRate) {
 		this.failRate = failRate;
 	}
@@ -52,12 +57,25 @@ public class GThEdge {
 		this.endNode = endNode;
 	}
 	public ArrayList<Service> getServices() {
-		return services;
+		return sharedServices;
 	}
-	public void setServices(ArrayList<Service> services) {
-		this.services = services;
+	public boolean addService(Service s) {
+		 
+		if(bandWidth > sharedServices.size()) {
+		this.sharedServices.add(s);
+		return true;
+		}
+		
+		return false;
+	}
+	public int getAvailableBW() {
+	 return	(  sharedServices.size());
 	}
 	
+	@Override
+	public String toString() {
+		return ("(bw:"+bandWidth+", a:"+getAvailableBW() +")" );
+	}
 	 
 	
 

@@ -1,10 +1,15 @@
 package gui;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Paint;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -20,18 +25,31 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.collections15.Transformer;
+
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
+import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
+//import edu.uci.ics.jung.visualization
 import models.GThEdge;
 import models.GThNode;
 import models.Game;
+import models.Strategy;
 
 public class GThMain implements ActionListener {
 
@@ -41,8 +59,11 @@ public class GThMain implements ActionListener {
 	private JTextField txtNumOfEdges;
 	JButton btnTestgraph;
 	JButton btnEdge;
+	JButton btnRun;
 	private Graph graph;
 	JPanel panel_5;
+	JMenuBar menuBar;
+	JMenu modeMenu;
 	Game game;
 	private JTextField txtNumOfClients;
 
@@ -76,10 +97,12 @@ public class GThMain implements ActionListener {
 
 		 game = new Game();
 		frame = new JFrame();
+		menuBar = new JMenuBar();
+		
 		frame.setBounds(100, 100, 652, 422);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JMenuBar menuBar = new JMenuBar();
+		 menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
 		JMenu mnFile = new JMenu("File");
@@ -105,15 +128,7 @@ public class GThMain implements ActionListener {
 		
 		JMenuItem mntmAdd = new JMenuItem("add");
 		mnNode.add(mntmAdd);
-		mntmAdd.addActionListener(this);//new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				 new NodeWindow().setVisible(true);
-//				 System.out.print("hello");
-//				
-//			}
-//		});
+		mntmAdd.addActionListener(this);
 		
 		JMenuItem mntmEdit = new JMenuItem("edit");
 		mnNode.add(mntmEdit);
@@ -197,6 +212,7 @@ public class GThMain implements ActionListener {
 		panel_3.add(lblNewLabel_1, "2, 2, left, default");
 		
 		txtNumOfServers = new JTextField();
+		txtNumOfServers.setText("1");
 		panel_3.add(txtNumOfServers, "4, 2, fill, default");
 		txtNumOfServers.setColumns(10);
 		
@@ -204,6 +220,7 @@ public class GThMain implements ActionListener {
 		panel_3.add(lblClients, "2, 4, left, default");
 		
 		txtNumOfClients = new JTextField();
+		txtNumOfClients.setText("2");
 		panel_3.add(txtNumOfClients, "4, 4, fill, default");
 		txtNumOfClients.setColumns(10);
 		
@@ -243,8 +260,9 @@ public class GThMain implements ActionListener {
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4, BorderLayout.SOUTH);
 		
-		JButton btnNewButton_1 = new JButton("Run");
-		panel_4.add(btnNewButton_1);
+		btnRun = new JButton("Run");
+		btnRun.addActionListener( this);
+		panel_4.add(btnRun);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		panel.add(tabbedPane, BorderLayout.CENTER);
@@ -263,6 +281,22 @@ public class GThMain implements ActionListener {
 
 //		 new NodeWindow().setVisible(true);
 //		 System.out.print("hello");
+		 if(e.getSource().equals(btnRun)) {
+			 
+//			 System.out.print("btnRun");
+			 
+			 Strategy st = game.populateRandStrategy();
+			 
+//			 System.out.print("stlist size:"+st.getParticipants().size());
+//			 
+//			 for (Iterator iterator = st.getParticipants().iterator(); iterator.hasNext();) {
+//				GThNode node = (GThNode) iterator.next();
+//				System.out.print("\n"+node.getId());
+//				
+//			}
+			 
+			 displayGraph(game.createCompeletGraph());
+		 }
 		 
 		 if(e.getSource().equals(btnTestgraph)) {
 			 
@@ -272,8 +306,9 @@ public class GThMain implements ActionListener {
 			 game.setNumClients(clients);
 			 game.setNumServers(servers);
 			 game.setNumNodes(game.getNumClients()+game.getNumServers());
-			 game.init();
-			 graph =	 game.compeletGraph();
+			 game.initGraph();
+			 graph =	 game.createCompeletGraph(); 
+			 
 				
 //				graph =	game.testGraph();
 //				game.directedGraph();
@@ -281,10 +316,13 @@ public class GThMain implements ActionListener {
 		
 			displayGraph(graph);
 		 }
-		 if(e.getSource().equals(btnEdge))
+		 if(e.getSource().equals(btnEdge)) {
 			
-			 graph = game.compeletGraph();
-		 displayGraph(graph);
+			 graph = game.createCompeletGraph();
+			 displayGraph(graph);
+		 }
+		
+			 
 			 
 	    }
 	 
@@ -292,16 +330,56 @@ public class GThMain implements ActionListener {
 		 
 		 
 		 Layout<GThNode, GThEdge> layout = new CircleLayout(graph);
-		 layout.setSize(new Dimension(300,300)); // sets the initial size of the space
-		 // The BasicVisualizationServer<V,E> is parameterized by the edge types
-		 BasicVisualizationServer<GThNode,GThEdge> vv =
-		 new BasicVisualizationServer<GThNode,GThEdge>(layout);
-		 vv.setPreferredSize(new Dimension(350,350)); //Sets the viewing area size
 
+//		 Layout<GThNode, GThEdge> layout = new StaticLayout(graph);
+		 
+		 layout.setSize(panel_5.getSize());
+		 
+		 VisualizationViewer<GThNode,GThEdge> vv =
+				 new VisualizationViewer<GThNode,GThEdge>(layout);
+		 
+		 vv.setPreferredSize(panel_5.getSize());
+		 
+		 
+		 Transformer<GThNode,Paint> vertexPaint = new Transformer<GThNode,Paint>() {
+			 public Paint transform(GThNode i) {
+			 return Color.GREEN;
+			 }
+			 };
+			
+			 
+			 
+			 vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+//			 vv.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
 
+			 vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+			 vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+			 vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
+			 
+			 
+			EditingModalGraphMouse gm =
+					 new EditingModalGraphMouse(vv.getRenderContext(),
+					  game.vertexFactory, game.edgeFactory); 
+			
+			 vv.setGraphMouse(gm);
+			 
+			
+			 modeMenu = gm.getModeMenu(); // Obtain mode menu from the mouse
+			 modeMenu.setText("Mouse Mode");
+//			 modeMenu.setIcon(null); // I'm using this in a main menu
+//			 modeMenu.setPreferredSize(new Dimension(80,20)); // Change the size 
+			 menuBar.add(modeMenu);
+			 frame.setJMenuBar(menuBar);
+//			 gm.setMode(ModalGraphMouse.Mode.EDITING); // Start off in editing mode
+			
+
+		 
+		 panel_5.removeAll();
 		 panel_5.add(vv);
+		 panel_5.getTopLevelAncestor().revalidate();
 		 panel_5.getTopLevelAncestor().repaint();
-//		 panel_5.remove(vv);
+		 
+
 		
 	}
 }
