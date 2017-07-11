@@ -1,15 +1,14 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
-import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 public class NodeWindow extends JFrame {
@@ -60,15 +59,22 @@ public class NodeWindow extends JFrame {
 	        panelOne.setLayout(new GridLayout(2,1));
 	        
 	        JPanel panel = new JPanel();
-	        panel.setBorder(new TitledBorder(null, "one", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	        panel.setBorder(new TitledBorder(null, "Attack Strategy", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	        panelOne.add(panel);
 	        
 	        JPanel panel_1 = new JPanel();
-	        panel_1.setBorder(new TitledBorder(null, "leftbottom", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+	        panel_1.setBorder(new TitledBorder(null, "Diffence Stragty", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	        panelOne.add(panel_1);
 	        
 	        
 	        contentPane.add(panelTwo);
+	        DefaultListModel model = new DefaultListModel();
+	        JList list = new JList(model);
+	        model.addElement("one");
+	        JScrollPane pane = new JScrollPane(list);
+	        
+	        panelTwo.add(pane);
+	        
 //	        panelTwo.setLayout(new BoxLayout(panelTwo, BoxLayout.X_AXIS));
 	        
 //	        contentPane.add(panelThree);

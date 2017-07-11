@@ -65,6 +65,7 @@ public class GThMain implements ActionListener {
 	JMenuBar menuBar;
 	JMenu modeMenu;
 	Game game;
+//	boolean menuadded =false;
 	private JTextField txtNumOfClients;
 
 	/**
@@ -88,6 +89,7 @@ public class GThMain implements ActionListener {
 	 */
 	public GThMain() {
 		initialize();
+//		displayGraph(game.createCompeletGraph());
 	}
 
 	/**
@@ -273,6 +275,8 @@ public class GThMain implements ActionListener {
 		JPanel panel_6 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_6, null);
 		
+		
+	
 
 	}
 	
@@ -306,8 +310,8 @@ public class GThMain implements ActionListener {
 			 game.setNumClients(clients);
 			 game.setNumServers(servers);
 			 game.setNumNodes(game.getNumClients()+game.getNumServers());
-			 game.initGraph();
-			 graph =	 game.createCompeletGraph(); 
+//			 game.initGraph();
+			 graph =	 game.getGraph(); 
 			 
 				
 //				graph =	game.testGraph();
@@ -318,7 +322,7 @@ public class GThMain implements ActionListener {
 		 }
 		 if(e.getSource().equals(btnEdge)) {
 			
-			 graph = game.createCompeletGraph();
+			 graph = game.getGraph();
 			 displayGraph(graph);
 		 }
 		
@@ -368,8 +372,11 @@ public class GThMain implements ActionListener {
 			 modeMenu.setText("Mouse Mode");
 //			 modeMenu.setIcon(null); // I'm using this in a main menu
 //			 modeMenu.setPreferredSize(new Dimension(80,20)); // Change the size 
+		
 			 menuBar.add(modeMenu);
+			
 			 frame.setJMenuBar(menuBar);
+		
 //			 gm.setMode(ModalGraphMouse.Mode.EDITING); // Start off in editing mode
 			
 

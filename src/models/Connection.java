@@ -1,16 +1,22 @@
 package models;
 
-public class Service {
+public class Connection {
 	
 	public static final int SERVER_ATTRIBUTE = 3;
 	public static final int CLIENT_ATTRIBUTE = 2;
 	public static final int EDGE_ATTRIBUTE = 1;
+	
 	
 	int id;
 	String name;
 	int attributeType;
 	int requiredBandwith;
 	boolean status;
+	
+	
+	public Connection(int id) {
+		this.id = id;
+	}
 	public int getId() {
 		return id;
 	}

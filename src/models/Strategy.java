@@ -9,6 +9,7 @@ public class Strategy {
 	int id;
 	String name;
 //	String strategyType;
+	
 	ArrayList<GThNode> participants;
 	
 	Strategy(GThNode startNode,int length){

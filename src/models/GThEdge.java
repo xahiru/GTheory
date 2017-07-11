@@ -1,81 +1,117 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.Timer;
 
 public class GThEdge {
 	int id;
 	
-	boolean onlineStatus;
-	final double bandWidth; //total
-	final double initial;
+	final int initialCount;
+	
 	
 	GThNode startNode;
 	GThNode endNode;
 	
+	/*not sure we'll use the following time related variables*/
+	Timer timeCounter;
+	Date startTime;
+	Date interval;
+	
+	
 	double failRate;
-	ArrayList<Service> sharedServices;
+	
+	ArrayList<Connection> sharedConns; //availableConnection at any given time
 	
 	public GThEdge(GThNode startNode, GThNode endNode) {
 		super();
 		this.startNode = startNode;
 		this.endNode = endNode;
-		sharedServices = new ArrayList<Service>();
-		this.bandWidth = startNode.maxServices>endNode.maxServices?endNode.maxServices:startNode.maxServices;
-		this.initial = startNode.availableServices.size()>endNode.availableServices.size()?endNode.availableServices.size():startNode.availableServices.size();
+		sharedConns = new ArrayList<Connection>();
 		
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
+		this.initialCount = startNode.INITIAL_SERVICE_COUNT>endNode.INITIAL_SERVICE_COUNT?endNode.INITIAL_SERVICE_COUNT:startNode.INITIAL_SERVICE_COUNT;
+		
+		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
+		
+		
+		
 	}
 	
-	public double getBandWidth() {
-		return bandWidth;
-	}
-//	public void setBandWidth(int bandWidth) {
-//		this.bandWidth = bandWidth;
-//	}
-//	public int getFailRate() {
-//		return failRate;
-//	}
-	public void setFailRate(int failRate) {
-		this.failRate = failRate;
-	}
-	public GThNode getStartNode() {
-		return startNode;
-	}
-	public void setStartNode(GThNode startNode) {
-		this.startNode = startNode;
-	}
-	public GThNode getEndNode() {
-		return endNode;
-	}
-	public void setEndNode(GThNode endNode) {
-		this.endNode = endNode;
-	}
-	public ArrayList<Service> getServices() {
-		return sharedServices;
-	}
-	public boolean addService(Service s) {
-		 
-		if(bandWidth > sharedServices.size()) {
-		this.sharedServices.add(s);
-		return true;
-		}
-		
-		return false;
-	}
-	public int getAvailableBW() {
-	 return	(  sharedServices.size());
-	}
 	
 	@Override
 	public String toString() {
-		return ("(bw:"+bandWidth+", a:"+getAvailableBW() +")" );
+		return ("(ini:"+initialCount+", a:"+getSharedConns().size()+")" );
+		
 	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+	public boolean isOnline() {
+		return this.sharedConns.isEmpty()?false:true;
+	}
+
+
+
+	public GThNode getStartNode() {
+		return startNode;
+	}
+
+
+	public void setStartNode(GThNode startNode) {
+		this.startNode = startNode;
+	}
+
+
+	public GThNode getEndNode() {
+		return endNode;
+	}
+
+
+	public void setEndNode(GThNode endNode) {
+		this.endNode = endNode;
+	}
+
+
+	public double getFailRate() {
+		return failRate;
+	}
+
+
+	public void setFailRate(double failRate) {
+		this.failRate = failRate;
+	}
+
+
+	public ArrayList<Connection> getSharedConns() {
+		return sharedConns;
+	}
+
+
+	public void setSharedConns(ArrayList<Connection> sharedConns) {
+		this.sharedConns = sharedConns;
+	}
+	public void addConns(Connection conns) {	
+		this.sharedConns.add(conns);
+	}
+	public void dropConns(Connection conns) {	
+		this.sharedConns.remove(conns);
+	}
+
+
+	public double getInitialCount() {
+		return initialCount;
+	}
+	
+	
 	 
 	
 

@@ -6,59 +6,31 @@ import java.util.Vector;
 
 public class GThNode {
 	int id;
-	String name;
-	int maxServices;
-	int initialServices;
-//	ROLE role;
-	ArrayList<Service> availableServices;
-	ArrayList<GThEdge> nodeEgdes;
-	ArrayList<GThNode>	peers;
-	boolean attackStartNode;
+	
+	final int INITIAL_SERVICE_COUNT;
+	
+	private ArrayList<Connection> availableConn;
+	private ArrayList<GThEdge> nodeEgdes;
+	
+	
 	double captureCost;
-	boolean valnerable = false;
-	
-	Vector profitVector;
+	private	boolean valnerable = false;
 	
 	
-	
-	public GThNode(int id, String name) {
-		super();
-		this.id = id;
-		this.name = name;
-
-		nodeEgdes = new ArrayList<>();
-		availableServices = new ArrayList<Service>();
-		
-		
-	}
-	
-	public GThNode(int id) {
-		super();
+	public GThNode(int id,int init_service_count) {
+		INITIAL_SERVICE_COUNT = init_service_count;
 		this.id = id;
 		nodeEgdes = new ArrayList<>();
-		availableServices = new ArrayList<Service>();
+		availableConn = new ArrayList<Connection>();
+		for (int i = 0; i < init_service_count; i++) {
+			Connection newCon = new Connection(id*10+i+1);
+			availableConn.add(newCon);
+				
+		}
 		
 		
 	}
 	
-	
-	
-	
-
-	public ArrayList<GThNode> scanOnlineNodes() {
-		ArrayList<GThNode> onlineList =new ArrayList<GThNode>();
-		//Todo searching goes here
-		
-		return onlineList;
-	}
-	
-	public boolean attack(GThNode node, Strategy strategy) {
-		boolean successStatus = false;
-		
-		//attack
-		return successStatus;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -67,20 +39,13 @@ public class GThNode {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+
+	public ArrayList<Connection> getAvaialableConnections() {
+		return availableConn;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public ArrayList<Service> getAvaialableServices() {
-		return availableServices;
-	}
-
-	public void setAvaialableServices(ArrayList<Service> services) {
-		this.availableServices = services;
+	public void setAvaialableConnections(ArrayList<Connection> services) {
+		this.availableConn = services;
 	}
 
 	public ArrayList<GThEdge> getNodeEdges() {
@@ -95,21 +60,8 @@ public class GThNode {
 		this.nodeEgdes.remove(e);
 	}
 	
-	public ArrayList<GThNode> getPeers() {
-		return peers;
-	}
 
-	public void setPeers(ArrayList<GThNode> peers) {
-		this.peers = peers;
-	}
-
-	public boolean isAttackStartNode() {
-		return attackStartNode;
-	}
-
-	public void setAttackStartNode(boolean attackStartNode) {
-		this.attackStartNode = attackStartNode;
-	}
+	
 
 	public double getCaptureCost() {
 		return captureCost;
@@ -127,18 +79,6 @@ public class GThNode {
 		this.valnerable = valnerable;
 	}
 
-	public Vector getProfitVector() {
-		return profitVector;
-	}
-
-	public void setProfitVector(Vector profitVector) {
-		this.profitVector = profitVector;
-	}
-
-	
-	
-	
-	
 	
 
 }
