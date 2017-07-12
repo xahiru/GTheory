@@ -7,7 +7,8 @@ import java.util.Timer;
 public class GThEdge {
 	int id;
 	
-	final int initialCount;
+	final int initialConnCount;
+	int sharedConns;
 	
 	
 	GThNode startNode;
@@ -21,26 +22,32 @@ public class GThEdge {
 	
 	double failRate;
 	
-	ArrayList<Connection> sharedConns; //availableConnection at any given time
+//	ArrayList<Connection> sharedConns; //availableConnection at any given time
 	
 	public GThEdge(GThNode startNode, GThNode endNode) {
 		super();
 		this.startNode = startNode;
 		this.endNode = endNode;
-		sharedConns = new ArrayList<Connection>();
+//		sharedConns = new ArrayList<Connection>();
 		
-		this.initialCount = startNode.INITIAL_SERVICE_COUNT>endNode.INITIAL_SERVICE_COUNT?endNode.INITIAL_SERVICE_COUNT:startNode.INITIAL_SERVICE_COUNT;
+		this.initialConnCount = startNode.INITIAL_CONNECTIONS>endNode.INITIAL_CONNECTIONS?endNode.INITIAL_CONNECTIONS:startNode.INITIAL_CONNECTIONS;
 		
-		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
+//		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
 		
 		
+		
+	}
+	
+	public void updateEdgeState() {
+//		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
+		this.sharedConns = startNode.getAvaialableConnections()>endNode.getAvaialableConnections()?startNode.getAvaialableConnections():endNode.getAvaialableConnections();
 		
 	}
 	
 	
 	@Override
 	public String toString() {
-		return ("(ini:"+initialCount+", a:"+getSharedConns().size()+")" );
+		return ("(ini:"+initialConnCount+", a:"+getSharedConns()+")" );
 		
 	}
 
@@ -56,7 +63,7 @@ public class GThEdge {
 
 
 	public boolean isOnline() {
-		return this.sharedConns.isEmpty()?false:true;
+		return this.sharedConns==0?false:true;
 	}
 
 
@@ -91,24 +98,24 @@ public class GThEdge {
 	}
 
 
-	public ArrayList<Connection> getSharedConns() {
+	public int getSharedConns() {
 		return sharedConns;
 	}
 
 
-	public void setSharedConns(ArrayList<Connection> sharedConns) {
-		this.sharedConns = sharedConns;
-	}
-	public void addConns(Connection conns) {	
-		this.sharedConns.add(conns);
-	}
-	public void dropConns(Connection conns) {	
-		this.sharedConns.remove(conns);
-	}
+//	public void setSharedConns(ArrayList<Connection> sharedConns) {
+//		this.sharedConns = sharedConns;
+//	}
+//	public void addConns(Connection conns) {	
+//		this.sharedConns.add(conns);
+//	}
+//	public void dropConns(Connection conns) {	
+//		this.sharedConns.remove(conns);
+//	}
 
 
 	public double getInitialCount() {
-		return initialCount;
+		return sharedConns;
 	}
 	
 	

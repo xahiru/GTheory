@@ -8,7 +8,7 @@ public class AttackChian {
 	private ArrayList<GThEdge> chain;
 	
 	public AttackChian(int attempt, ArrayList<GThEdge> chain) {
-		super();
+		
 //		this.id = id;
 		this.attempt = attempt;
 		this.chain = chain;
@@ -36,6 +36,12 @@ public class AttackChian {
 
 	public void setChain(ArrayList<GThEdge> chain) {
 		this.chain = chain;
+	}
+	
+	public double getChainCaptureCost() {
+		if(!chain.isEmpty())
+		return chain.get(0).startNode.captureCost;
+		return 0;
 	}
 	
 	public boolean addAnEdgeToChain(GThEdge edge) {
@@ -67,7 +73,11 @@ public class AttackChian {
 		return false;	
 	}
 	
-	
+	public int getSize() {
+		if(!chain.isEmpty())
+		return chain.size();
+		return 0;
+	}
 	
 	
 	

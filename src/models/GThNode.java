@@ -7,10 +7,12 @@ import java.util.Vector;
 public class GThNode {
 	int id;
 	
-	final int INITIAL_SERVICE_COUNT;
+//	final int INITIAL_SERVICE_COUNT;
+	final int INITIAL_CONNECTIONS;
 	
-	private ArrayList<Connection> availableConn;
+//	private ArrayList<Connection> availableConn;
 	private ArrayList<GThEdge> nodeEgdes;
+	private int availableConn;
 	
 	
 	double captureCost;
@@ -18,15 +20,18 @@ public class GThNode {
 	
 	
 	public GThNode(int id,int init_service_count) {
-		INITIAL_SERVICE_COUNT = init_service_count;
+//		INITIAL_SERVICE_COUNT = init_service_count;
 		this.id = id;
 		nodeEgdes = new ArrayList<>();
-		availableConn = new ArrayList<Connection>();
-		for (int i = 0; i < init_service_count; i++) {
-			Connection newCon = new Connection(id*10+i+1);
-			availableConn.add(newCon);
-				
-		}
+		
+		this.availableConn = init_service_count;
+		INITIAL_CONNECTIONS = init_service_count;
+//		availableConn = new ArrayList<Connection>();
+//		for (int i = 0; i < init_service_count; i++) {
+//			Connection newCon = new Connection(id*10+i+1);
+//			availableConn.add(newCon);
+//				
+//		}
 		
 		
 	}
@@ -40,17 +45,24 @@ public class GThNode {
 	}
 
 
-	public ArrayList<Connection> getAvaialableConnections() {
+	public int getAvaialableConnections() {
 		return availableConn;
 	}
 
-	public void setAvaialableConnections(ArrayList<Connection> services) {
-		this.availableConn = services;
+	public void setAvaialableConnections(int conns) {
+		if(conns > 0) {
+			this.availableConn = conns;
+		}else
+		{
+			this.availableConn = 0;
+		}
+		
 	}
 
 	public ArrayList<GThEdge> getNodeEdges() {
 		return nodeEgdes;
 	}
+	
 	
 
 	public void addEdge(GThEdge e) {

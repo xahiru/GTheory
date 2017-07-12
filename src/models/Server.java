@@ -15,9 +15,11 @@ public class Server extends GThNode{
 		
 	}
 
+	
+	
 	@Override
 	public String toString() {
-		return "S"+ id +" service size:"+ getAvaialableConnections().size()+"Val="+isValnerable();
+		return "S"+ id +" service size:"+ getAvaialableConnections()+"Val="+isValnerable();
 	}
 	
 	

@@ -12,7 +12,7 @@ public Client(int id, int init_service_count)  {
 	
 	@Override
 	public String toString() {
-		return "C"+ id +"service size:"+ getAvaialableConnections().size()+"Val="+isValnerable();
+		return "C"+ id +"service size:"+ getAvaialableConnections()+"Val="+isValnerable();
 	}
 
 }

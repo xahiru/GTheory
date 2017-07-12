@@ -1,12 +1,38 @@
 package models;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class DefenceStrategy extends Strategy{
+public class DefenceStrategy {
+	
+	
+	HashMap<GThEdge, Integer> edgesList = new HashMap<GThEdge, Integer>();
 
-	DefenceStrategy(ArrayList<GThNode> nodeList) {
-		super(nodeList);
-		// TODO Auto-generated constructor stub
+	public DefenceStrategy(HashMap<GThEdge, Integer> edgesList) {
+		this.edgesList = edgesList;
 	}
+
+	public HashMap<GThEdge, Integer> getEdgesList() {
+		return edgesList;
+	}
+
+	public void setEdgesList(HashMap<GThEdge, Integer> edgesList) {
+		this.edgesList = edgesList;
+	}
+	
+	public double calculateCost() {
+		double cost = 0;
+		for (HashMap.Entry<GThEdge, Integer> entry : edgesList.entrySet()) {
+			GThEdge e = entry.getKey();
+			Integer value = Math.abs(entry.getValue());
+			
+			cost += value;
+		}
+		
+		return cost*Game.DEFENCE_COST_ALPHA;
+	}
+	
+	
+
+	
 
 }
