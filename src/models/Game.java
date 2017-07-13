@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Timer;
+import java.util.Vector;
 
 import org.apache.commons.collections15.Factory;
 
@@ -23,6 +24,8 @@ public class Game {
 	static boolean reverse = false;
 	int numServers;
 	int numClients;
+	
+	
 
 	int numEdges;
 		
@@ -31,6 +34,8 @@ public class Game {
 //	int networkV [];
 	
 	public static int MAX_SC;
+	public static int SC_0;
+	public static int SC_D; //current total;
 	
 
 	ArrayList<GThNode> nodes;
@@ -44,7 +49,7 @@ public class Game {
 //    int nodeCount;
 
 	private Random randomGenerator;
-	private Timer timer;
+//	private Timer timer;
 	
 	
 //	ArrayList<HashMap> currentGameState = new ArrayList<>();
@@ -56,13 +61,14 @@ public class Game {
 	ArrayList<HashMap> gameStates = new ArrayList<>();
 	
 	ArrayList<AttackStrategy> attkStrategies = new ArrayList<>();
+	ArrayList<DefenceStrategy> defStrategies = new ArrayList<>();
 	
 	
 	
 	
 	public Game(int maxsc,int numServers, int numClients, int numAttackers) {
 		this.randomGenerator = new Random();
-		this.timer = new Timer();
+//		this.timer = new Timer();
 
 		//MAX_SC should be > numNodes + 4
 		
@@ -88,30 +94,51 @@ public class Game {
 		this.numEdges = (this.numNodes * ((this.numNodes) -1))/2 ;
 		
 		mainGraph = getGraph();
+		
+		Vector attack = new Vector<>();
+
+	
+	
 
 		AttackStrategy attStr = new  AttackStrategy(edges,3);
-//		attkStrategies.add(attStr);
+//		AttackStrategy attStr2 = new  AttackStrategy(edges,3);
+//		AttackStrategy attStr3 = new  AttackStrategy(edges,3);
+//		AttackStrategy attStr4 = new  AttackStrategy(edges,3);
+		attkStrategies.add(attStr);
+//		attkStrategies.add(attStr2);
+//		attkStrategies.add(attStr3);
+//		attkStrategies.add(attStr4);
+//		
+		attack.addElement(attkStrategies);
 		
 	
 		
-		System.out.println("Strategy current cost"+attStr.calculateCost());
-		
-		logToConsole("Strategy Attackchina", "==========");
-		
-		for (int i = 0; i < attStr.AttackChainList.size(); i++) {
-			System.out.println("Chain"+i);
-			for (int j = 0; j < attStr.AttackChainList.get(i).getChain().size(); j++) {
-				System.out.println("Edge"+attStr.AttackChainList.get(i).getChain().get(j).startNode.id+"=>"+attStr.AttackChainList.get(i).getChain().get(j).endNode.id);
-				
-			}
-			
-		}
+//		System.out.println("Strategy current cost"+attStr.calculateCost());
+//		
+//		logToConsole("Strategy Attackchina", "==========");
+//		
+//		for (int i = 0; i < attStr.AttackChainList.size(); i++) {
+//			System.out.println("Chain"+i);
+//			for (int j = 0; j < attStr.AttackChainList.get(i).getChain().size(); j++) {
+//				System.out.println("Edge"+attStr.AttackChainList.get(i).getChain().get(j).startNode.id+"=>"+attStr.AttackChainList.get(i).getChain().get(j).endNode.id);
+//				
+//			}
+//			
+//		}
 		
 
 		initialGameState = initGameState();
 		
 		
-		DefenceStrategy df1 = createRandomDefenceStrategy();
+		DefenceStrategy df1 = createRandomDefenceStrategy(4);
+		DefenceStrategy df2 = createRandomDefenceStrategy(2);
+		DefenceStrategy df3 = createRandomDefenceStrategy(6);
+		DefenceStrategy df4 = createRandomDefenceStrategy(3);
+		
+		defStrategies.add(df4);
+		defStrategies.add(df3);
+		defStrategies.add(df2);
+		defStrategies.add(df1);
 		
 			for (HashMap.Entry<GThEdge, Integer> entry : df1.edgesList.entrySet()) {
 				GThEdge e = entry.getKey();
@@ -130,9 +157,30 @@ public class Game {
 		return createCompeletGraph();
 	}
 	
-	public void changeGameState() {
-		updateNodes();
+	public void changeGameState(int i) {
+		updateNodes(i);
 		updateEdges(); 
+	}
+	
+	
+	
+	
+	public void attack(AttackStrategy attackS) {
+		
+		for (Iterator iterator = attackS.AttackChainList.iterator(); iterator.hasNext();) {
+			AttackChian attackChian = (AttackChian) iterator.next();
+			
+			GThEdge minEdge ;
+			
+			for (int i = 0; i < attackChian.getChain().size(); i++) {
+				if(i == 0)
+					minEdge = attackChian.getChain().get(i);
+				
+			}
+			
+		}
+		
+		
 	}
 	
 	public HashMap<GThEdge, Integer> initGameState(){
@@ -150,9 +198,9 @@ public class Game {
 	
 	
 	
-	public DefenceStrategy createRandomDefenceStrategy() {
+	public DefenceStrategy createRandomDefenceStrategy(int staticNode) {
 		
-		changeGameState();
+		changeGameState(staticNode);
 		
 		
 		HashMap<GThEdge, Integer> edgeWeigths = new HashMap <GThEdge, Integer>();
@@ -161,7 +209,6 @@ public class Game {
 			GThEdge e = edges.get(i);
 			Integer weightChage = edges.get(i).initialConnCount-edges.get(i).getSharedConns();
 			edgeWeigths.put(e, weightChage);
-//			currentGameState.add(edgeWeigths);
 		}
 		
 		
@@ -170,15 +217,19 @@ public class Game {
 	
 	
 	public void updateEdges() {
+		int sdtemp = 0;
 		for (int i = 0; i < edges.size(); i++) {
 			edges.get(i).updateEdgeState();
+			sdtemp += edges.get(i).sharedConns;
+			
 		}
+		SC_D = sdtemp;
 	}
 	
-	public void updateNodes() {
+	public void updateNodes(int staticNode) {
 		
 		for (int i = 0; i < nodes.size(); i++) {
-			if(i == 4|| i == 6)
+			if(i == staticNode - 2 || i == staticNode)
 				continue;
 			if(i%3 == 0)
 				nodes.get(i).setAvaialableConnections(i*2);
@@ -192,6 +243,8 @@ public class Game {
 
 
 	public void initGraph() {
+		
+		int SCConCount = 0;
 //		rand = new Random();
 		nodes = new ArrayList<GThNode>();
 		edges = new ArrayList<GThEdge>();
@@ -247,15 +300,16 @@ public class Game {
 					GThEdge ed = new GThEdge(inode,jnode);
 					inode.addEdge(ed);
 					jnode.addEdge(ed);
+					SCConCount += ed.initialConnCount; //counting the total initial count of the network
 					edges.add(ed);
-					
-					
 				}
-			
 			}
-						
-			
 		}
+		
+		/*
+		 * Setting Initial Total Shared connections of the network
+		 */
+		SC_0 = SCConCount;
 		
 		/*
 		 * Factories for editing graph
@@ -290,6 +344,8 @@ public class Game {
 		
 		
 	}
+	
+	
 	
 	
 	

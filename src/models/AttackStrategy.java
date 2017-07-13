@@ -8,6 +8,7 @@ import java.util.TimerTask;
 public class AttackStrategy extends TimerTask {
 	
 	private Random randomGenerator;
+	private double cost;
 	
 	public ArrayList<AttackChian> AttackChainList;
 	private ArrayList<GThEdge> networkEdges;
@@ -165,8 +166,13 @@ public void run() {
 		cost += attackCost + captureCost;
 		
 	}
-	 
+	 this.cost = cost;
 	 return cost;
  }
+ 
+ 
+	
+ 
+ 
 
 }

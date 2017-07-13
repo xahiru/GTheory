@@ -54,7 +54,7 @@ public class NodeWindow extends JFrame {
 	        JPanel panelTwo = new JPanel();
 //	        JPanel panelThree = new JPanel();
 
-	        contentPane.setLayout(new GridLayout(1,3));
+	        contentPane.setLayout(new GridLayout(1,2));
 	        contentPane.add(panelOne);
 	        panelOne.setLayout(new GridLayout(2,1));
 	        

@@ -174,6 +174,15 @@ public class GThMain implements ActionListener {
 		
 		 btnTestgraph = new JButton("Network");
 		toolBar.add(btnTestgraph);
+		
+		JButton btnNetwork = new JButton("+ Network");
+		btnNetwork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new GThNetwork().setVisible(true);
+				
+			}
+		});
+		toolBar.add(btnNetwork);
 		btnTestgraph.addActionListener(this);
 		
 		JPanel panel = new JPanel();
@@ -390,4 +399,3 @@ public class GThMain implements ActionListener {
 		
 	}
 }
-
