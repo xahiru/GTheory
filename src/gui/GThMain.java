@@ -97,7 +97,7 @@ public class GThMain implements ActionListener {
 	 */
 	private void initialize() {
 
-		 game = new Game();
+//		 game = new Game();
 		frame = new JFrame();
 		menuBar = new JMenuBar();
 		

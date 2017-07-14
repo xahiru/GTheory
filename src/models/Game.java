@@ -38,8 +38,8 @@ public class Game {
 	public static int SC_D; //current total;
 	
 
-	ArrayList<GThNode> nodes;
-	ArrayList<GThEdge> edges;
+	private ArrayList<GThNode> nodes;
+	private ArrayList<GThEdge> edges;
 	ArrayList<Strategy> strategies;
 	
 //	ArrayList<> gameStatus;
@@ -66,7 +66,7 @@ public class Game {
 	
 	
 	
-	public Game(int maxsc,int numServers, int numClients, int numAttackers) {
+	public Game(int maxsc,int numServers, int numClients) {
 		this.randomGenerator = new Random();
 //		this.timer = new Timer();
 
@@ -493,6 +493,24 @@ public class Game {
 		
 		
 	}
+
+	public ArrayList<GThNode> getNodes() {
+		return nodes;
+	}
+
+	public void setNodes(ArrayList<GThNode> nodes) {
+		this.nodes = nodes;
+	}
+
+	public ArrayList<GThEdge> getEdges() {
+		return edges;
+	}
+
+	public void setEdges(ArrayList<GThEdge> edges) {
+		this.edges = edges;
+	}
+	
+	
 	
 	
 	
