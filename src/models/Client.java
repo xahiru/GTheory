@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class Client extends GThNode {
 	
-public Client(int id, int init_service_count)  {
+public Client(int id)  {
 	
-	super(id, init_service_count);
+	super(id);
 	}
 	
 	

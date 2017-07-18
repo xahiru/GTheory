@@ -1,17 +1,21 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 
 public class GThNode {
 	int id;
 	
-//	final int INITIAL_SERVICE_COUNT;
-	final int INITIAL_CONNECTIONS;
 	
-//	private ArrayList<Connection> availableConn;
-	private ArrayList<GThEdge> nodeEgdes;
+//	final int INITIAL_CONNECTIONS;
+	
+
+	private ArrayList<GThNode> neighbors;
+	private HashMap<GThNode, Integer> edgeConnections = new HashMap <GThNode, Integer>();
+	
+	
 	private int availableConn;
 	
 	
@@ -19,21 +23,12 @@ public class GThNode {
 	private	boolean valnerable = false;
 	
 	
-	public GThNode(int id,int init_service_count) {
-//		INITIAL_SERVICE_COUNT = init_service_count;
+	public GThNode(int id) {
+	
 		this.id = id;
-		nodeEgdes = new ArrayList<>();
+		neighbors = new ArrayList<>();
 		
-		this.availableConn = init_service_count;
-		INITIAL_CONNECTIONS = init_service_count;
-//		availableConn = new ArrayList<Connection>();
-//		for (int i = 0; i < init_service_count; i++) {
-//			Connection newCon = new Connection(id*10+i+1);
-//			availableConn.add(newCon);
-//				
-//		}
-		
-		
+
 	}
 	
 	public int getId() {
@@ -59,20 +54,35 @@ public class GThNode {
 		
 	}
 
-	public ArrayList<GThEdge> getNodeEdges() {
-		return nodeEgdes;
+	public ArrayList<GThNode> getNeighbors() {
+		return neighbors;
 	}
 	
 	
 
-	public void addEdge(GThEdge e) {
-		this.nodeEgdes.add(e);
+	public void addNeighbor(GThNode e) {
+		this.neighbors.add(e);
 	}
+	
 	public void removeEdge(GThEdge e) {
-		this.nodeEgdes.remove(e);
+		this.neighbors.remove(e);
 	}
 	
-
+	public void addEdgeConnection(GThNode n, int conn) {
+		this.edgeConnections.put(n, conn);
+	}
+	public void updateEdgeConnection(GThNode edgeEndNode, int conn) {
+		this.edgeConnections.put(edgeEndNode, conn);
+	}
+	
+//	public void removeEdgeConnection(GThEdge e) {
+//		this.edgeConnections.remove(e);
+//	}
+	
+	public int getEdgeConnection(GThNode n) {
+		return this.edgeConnections.get(n);
+	}
+	
 	
 
 	public double getCaptureCost() {

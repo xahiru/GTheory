@@ -39,7 +39,7 @@ public class Strategy {
 		
 //		nodes.add();
 		
-		recursiveSearch(currentNode.getNodeEdges().isEmpty(), currentNode);
+//		recursiveSearch(currentNode.getNodeEdges().isEmpty(), currentNode);
 		
 		return nodes;
 	}
@@ -53,23 +53,23 @@ public class Strategy {
 	
 	
 	
-	private GThNode recursiveSearch(boolean empty, GThNode node){
-		System.out.println("node id:"+node.id+" :"+node.isValnerable());
-	    if (node.isValnerable())
-	        return node;
-	    ArrayList<GThEdge> edgeNodes = node.getNodeEdges(); 
-	    GThNode res = null;
-	    for (int i = 0; res == null && i < edgeNodes.size(); i++) { 
-	    		
-	        res = recursiveSearch(edgeNodes.isEmpty(), edgeNodes.get(i).endNode);
-	      
-	    }
-	    if(res.isValnerable())
-	    	return res;
-	    else {
-	     return	recursiveSearch(false, node);
-	    }
-	 }
+//	private GThNode recursiveSearch(boolean empty, GThNode node){
+//		System.out.println("node id:"+node.id+" :"+node.isValnerable());
+//	    if (node.isValnerable())
+//	        return node;
+//	    ArrayList<GThEdge> edgeNodes = node.getNodeEdges(); 
+//	    GThNode res = null;
+//	    for (int i = 0; res == null && i < edgeNodes.size(); i++) { 
+//	    		
+//	        res = recursiveSearch(edgeNodes.isEmpty(), edgeNodes.get(i).endNode);
+//	      
+//	    }
+//	    if(res.isValnerable())
+//	    	return res;
+//	    else {
+//	     return	recursiveSearch(false, node);
+//	    }
+//	 }
 
 	
 	

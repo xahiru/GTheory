@@ -5,10 +5,11 @@ import java.util.Date;
 import java.util.Timer;
 
 public class GThEdge {
-	int id;
+	String id;
 	
-	final int initialConnCount;
+	 int initialConnCount;
 	int sharedConns;
+	static int c =0;
 	
 	
 	GThNode startNode;
@@ -22,44 +23,39 @@ public class GThEdge {
 	
 	double failRate;
 	
-//	ArrayList<Connection> sharedConns; //availableConnection at any given time
-	
 	public GThEdge(GThNode startNode, GThNode endNode) {
-		super();
+	
+		this.id = String.valueOf(startNode.getId())+ String.valueOf(endNode.getId());
 		this.startNode = startNode;
 		this.endNode = endNode;
 //		sharedConns = new ArrayList<Connection>();
-		
-		this.initialConnCount = startNode.INITIAL_CONNECTIONS>=endNode.INITIAL_CONNECTIONS?endNode.INITIAL_CONNECTIONS:startNode.INITIAL_CONNECTIONS;
-		
-		this.sharedConns = this.initialConnCount;
-		
-//		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
-		
 		
 		
 	}
 	
 	public void updateEdgeState() {
-//		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
-		this.sharedConns = startNode.getAvaialableConnections()>=endNode.getAvaialableConnections()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
+		this.sharedConns = startNode.getEdgeConnection(endNode) >=endNode.getEdgeConnection(startNode)?endNode.getEdgeConnection(startNode):startNode.getEdgeConnection(endNode);
+		if(GThEdge.c ==0)
+		initialConnCount = sharedConns;
+		
+		c++;
 		
 	}
 	
 	
 	@Override
 	public String toString() {
-		return ("(ini:"+initialConnCount+", a:"+getSharedConns()+")" );
+		return ("(ini:"+sharedConns+", a:"+getSharedConns()+")" );
 		
 	}
 
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -7,15 +7,12 @@ public class Server extends GThNode{
 	
 	static int CURRENT_SERVERCON_MAX;
 	
-	public Server(int id, int init_service_count) {
+	public Server(int id) {
 		
-		super(id, init_service_count);
-		
-		CURRENT_SERVERCON_MAX = (CURRENT_SERVERCON_MAX>init_service_count) ?CURRENT_SERVERCON_MAX:init_service_count;
+		super(id);
 		
 	}
 
-	
 	
 	@Override
 	public String toString() {

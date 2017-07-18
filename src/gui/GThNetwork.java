@@ -57,6 +57,13 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 	private Vector nodesV = null;
 	private Vector nodesVulnerability = null;
 	
+	private Vector  startNodesType = new Vector<>();
+	private Vector  endNodesType =  new Vector<>();
+	private Vector  endNodesVul = new Vector<>();
+	private Vector  startNodesVul = new Vector<>();
+	
+	
+	
 	private Game g;
 	
 	DefaultTableModel dmEdge;
@@ -70,22 +77,7 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 	JLabel lblEdge;
 	
 	int count = 0;
-	
-//	GThMain mainWindow;
 
-	
-//	public static void main(String[] args) {
-//	    EventQueue.invokeLater(new Runnable() {
-//	        public void run() {
-//	            try {
-//	                Test_JIF frame = new Test_JIF();
-//	                frame.setVisible(true);
-//	            } catch (Exception e) {
-//	                e.printStackTrace();
-//	            }
-//	        }
-//	    });
-//	}
 
 	/**
 	 * Create the frame.
@@ -254,6 +246,10 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 			GThMain.window.txtNumOfEdges.setText(Integer.toString(g.getNumEdges()));
 			GThMain.window.textTotalConnections.setText(Integer.toString(g.getTotalNumConnections()));
 //			GThMain.window.btnRun.
+			GThMain.window.game.addRandDS(2);
+//			GThMain.window.comboBox_1.add("stragyone");
+			
+			
 			GThMain.window.displayGraph(g.getMainGraph());
 			
 			
@@ -285,7 +281,8 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 			    nodeDm.addColumn("Node ID",nodesV);
 //			    nodeDm.addColumn("Node Type",data);
 //			    nodeDm.addColumn("Vulnerability",nodesVulnerability);
-			    nodeDm.addColumn("Connections",connections);
+			    nodeDm.addColumn("type",nodesVulnerability);
+			    nodeDm.addColumn("CaptureCost",connections);
 			    
 			    nodesTable = new JTable(nodeDm);
 			    nodesTable.setShowGrid(true);
@@ -305,6 +302,10 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		
 		
 		endtNodes = new Vector<>();
+		startNodesType = new Vector<>();
+		endNodesType =  new Vector<>();
+		endNodesVul = new Vector<>();
+		startNodesVul = new Vector<>();
 		startNodes = new Vector<>();
 		nodesV = new Vector<>();
 		edgeConnections = new Vector<>();
@@ -316,21 +317,23 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 			 GThEdge gThEdge = edges.get(i);
 			GThNode nodE = gThEdge.getStartNode();
 			startNodes.addElement(nodE.getId());
+			startNodesVul.addElement(nodE.isValnerable());
 			
 			if(!nodesV.contains(nodE.getId())) {
 				nodesV.addElement(nodE.getId());
 				connections.addElement(nodE.getAvaialableConnections());
-//				nodesVulnerability.addElement(nodE.isValnerable());
+				
 			}
 			
 			nodE = gThEdge.getEndNode();	
 			endtNodes.addElement(nodE.getId());
 			edgeConnections.addElement(gThEdge.getSharedConns());
+			endNodesVul.addElement(nodE.isValnerable());
 			
 			if(!nodesV.contains(nodE.getId())) {
 				nodesV.addElement(nodE.getId());
 				connections.addElement(nodE.getAvaialableConnections());
-//				nodesVulnerability.addElement(nodE.isValnerable());
+				
 			}
 			
 		}
@@ -341,8 +344,11 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 //	    dm.setDataVector(strArray2Vector(data), dummyHeader);
 	    
 		dmEdge.addColumn("Start Node",startNodes);
+		dmEdge.addColumn("sVul",startNodesVul);
 		dmEdge.addColumn("End Node",endtNodes);
+		dmEdge.addColumn("EVul",endNodesVul);
 		dmEdge.addColumn("Connections",edgeConnections);
+		
 		
 		dmEdge.addTableModelListener(this);
 		
@@ -367,17 +373,17 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 			for (Iterator iterator = nodeDm.getDataVector().iterator(); iterator.hasNext();) {
 				Vector object = (Vector) iterator.next();
 				
-				if(object.size()>1)
-				 conn = Integer.valueOf(object.get(1).toString());
+				if(object.size()>0)
+				 conn = Integer.valueOf(object.get(0).toString());
 				
 				int index = (int) object.get(0);
 				
 //				System.out.println(nodes.get(index-1).getId());
 				if(conn<= Game.MAX_SC) {
-				nodes.get(index-1).setAvaialableConnections(conn);
+				nodes.get(index).setAvaialableConnections(conn);
 				}else
 				{
-					JOptionPane.showMessageDialog(null, "node :"+nodes.get(index-1).getId()+ "connection has "+conn+ ", which is higher than the network max: "+Game.MAX_SC, "InfoBox: " + "Network Max SC reached", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "node :"+nodes.get(index).getId()+ "connection has "+conn+ ", which is higher than the network max: "+Game.MAX_SC, "InfoBox: " + "Network Max SC reached", JOptionPane.INFORMATION_MESSAGE);
 				    
 				}
 				

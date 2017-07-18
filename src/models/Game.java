@@ -20,10 +20,16 @@ public class Game {
 	
 	static double DEFENCE_COST_ALPHA = 0.5;
 	
+	public static final int SERVER_TYPE = 1;
+	public static final int CLIENT_TYPE =2;
+	
 	static int numNodes;
 	static boolean reverse = false;
 	int numServers;
 	int numClients;
+	
+	int vulServer;
+	int vulClient;
 	
 	
 
@@ -46,14 +52,9 @@ public class Game {
 	
 	public Factory <GThNode> vertexFactory;
 	public Factory<GThEdge> edgeFactory;
-//    int nodeCount;
 
-	private Random randomGenerator;
-//	private Timer timer;
 	
-	
-//	ArrayList<HashMap> currentGameState = new ArrayList<>();
-	
+
 	HashMap<GThEdge, Integer> currentGameState = new HashMap <GThEdge, Integer>();
 	HashMap<GThEdge, Integer> initialGameState  = new HashMap <GThEdge, Integer>();
 
@@ -67,27 +68,26 @@ public class Game {
 	
 	
 	public Game(int maxsc,int numServers, int numClients) {
-		this.randomGenerator = new Random();
-//		this.timer = new Timer();
-
-		//MAX_SC should be > numNodes + 4
-		
+	
 		this.MAX_SC = maxsc;
 		
-		this.numNodes = numServers + numClients;
 		this.numServers = numServers;
 		this.numClients = numClients;
+		
+		
+		this.numNodes = numServers + numClients;
 		this.numEdges = (this.numNodes * ((this.numNodes) -1))/2 ;
 		
-		
 		mainGraph = getGraph();
+		
+		
 
 				
 	}
 	
 	
 	public Game(int i) {
-		this.randomGenerator = new Random();
+	
 		//MAX_SC should be > numNodes + 4
 		MAX_SC = 20;
 		numNodes = 7;
@@ -159,7 +159,8 @@ public class Game {
 	}
 	
 	public void changeGameState(int i) {
-		updateNodes(i);
+		
+		updateRandNodesConn(i);
 		updateEdges(); 
 	}
 	
@@ -189,7 +190,7 @@ public class Game {
 		HashMap<GThEdge, Integer> edgeWeigths = new HashMap <GThEdge, Integer>();
 		for (int i = 0; i < edges.size(); i++) {
 			GThEdge e = edges.get(i);
-			Integer weight = edges.get(i).initialConnCount;
+			Integer weight = edges.get(i).sharedConns;
 			edgeWeigths.put(e, weight);
 
 		}
@@ -198,6 +199,10 @@ public class Game {
 	}
 	
 	
+	
+	public void addRandDS(int i) {
+		defStrategies.add(createRandomDefenceStrategy(i));
+	}
 	
 	public DefenceStrategy createRandomDefenceStrategy(int staticNode) {
 		
@@ -208,7 +213,7 @@ public class Game {
 		
 		for (int i = 0; i < edges.size(); i++) {
 			GThEdge e = edges.get(i);
-			Integer weightChage = edges.get(i).initialConnCount-edges.get(i).getSharedConns();
+			Integer weightChage =e.initialConnCount - e.getSharedConns();
 			edgeWeigths.put(e, weightChage);
 		}
 		
@@ -227,15 +232,24 @@ public class Game {
 		SC_D = sdtemp;
 	}
 	
-	public void updateNodes(int staticNode) {
+	public void updateRandNodesConn(int k) {
 		
 		for (int i = 0; i < nodes.size(); i++) {
-			if(i == staticNode - 2 || i == staticNode)
-				continue;
-			if(i%3 == 0)
-				nodes.get(i).setAvaialableConnections(i*2);
-			else
-				nodes.get(i).setAvaialableConnections(nodes.get(i).getAvaialableConnections()-i);
+			
+			for (int j = 0; j  < nodes.size(); j++) {
+				
+				if(i!=j) {
+					
+					nodes.get(i).updateEdgeConnection(nodes.get(j),  	nodes.get(i).getEdgeConnection(nodes.get(j))-(j+k));
+				}
+			}
+			
+//			if(i == staticNode - 2 || i == staticNode)
+//				continue;
+//			if(i%3 == 0)
+//				nodes.get(i).setAvaialableConnections(i*2);
+//			else
+//				nodes.get(i).setAvaialableConnections(nodes.get(i).getAvaialableConnections()-i);
 			
 			
 		}
@@ -246,7 +260,7 @@ public class Game {
 	public void initGraph() {
 		
 		int SCConCount = 0;
-//		rand = new Random();
+		
 		nodes = new ArrayList<GThNode>();
 		edges = new ArrayList<GThEdge>();
 //		networkV = new Vector<>();
@@ -259,58 +273,23 @@ public class Game {
 		 * Each client has Server.CURRENT_SERVERCON_MAX-2+i
 		 * 
 		 */
-		for (int i = 1; i <= numNodes; i++) {
-			GThNode n;
-			
-			
-			if(i<=numServers) {
-				n = new Server(i,MAX_SC-i);
 		
-			}else
-			{
-				n= new Client(i, Server.CURRENT_SERVERCON_MAX-(2+i));
-	
-			}
-			if(i % 2 == 0 ) {
-				n.setValnerable(true);
-
-				System.out.println("odd"+n.id);
-			}
-			
-			nodes.add(n);
-			
-		}
+		nodes = createNodes(numServers, Game.SERVER_TYPE,vulServer, nodes);
+		nodes = createNodes(numClients, Game.CLIENT_TYPE,vulClient, nodes);
 		
 		
 		/*
 		 * creating edges
-		 * completegraph
+		 * for completegraph
 		 * 
 		 */
-		GThNode inode;
-		GThNode jnode;
-		for (int i = 0; i < nodes.size(); i++) {
-
-			for (int j = i; j < nodes.size(); j++) {
-				
-				if(i!=j) {
-	
-					inode = nodes.get(i);
-					jnode = nodes.get(j);
-					
-					GThEdge ed = new GThEdge(inode,jnode);
-					inode.addEdge(ed);
-					jnode.addEdge(ed);
-					SCConCount += ed.initialConnCount; //counting the total initial count of the network
-					edges.add(ed);
-				}
-			}
-		}
+		edges = createEdges(nodes);
+		
 		
 		/*
 		 * Setting Initial Total Shared connections of the network
 		 */
-		SC_0 = SCConCount;
+		SC_0 = createConnections(nodes, 20);
 		
 		/*
 		 * Factories for editing graph
@@ -319,7 +298,7 @@ public class Game {
 		vertexFactory = new Factory<GThNode>() { //vertex factory
             public GThNode create() {
             	
-            		GThNode n = new GThNode(nodes.size()+1, 200);
+            		GThNode n = new GThNode(nodes.size()+1);
             		nodes.add(n);
             		numNodes = nodes.size();
             		logToConsole(Integer.toString(nodes.size()), "node created");
@@ -338,6 +317,100 @@ public class Game {
         
  
 	}
+
+	
+	public ArrayList<GThNode> createNodes(int number,int type, int valCount, ArrayList<GThNode> nList) {
+		
+		GThNode n;
+		
+		int size = nList.size();
+		switch (type) {
+		case 1:
+			for (int i = size; i < number+size; i++) {
+				
+				n = new Server(i);
+				if(i<valCount+size)
+					n.setValnerable(true);
+				nList.add(n);
+				
+			}
+			
+			break;
+			
+		case 2:
+			
+			for (int i = size; i < number+size; i++) {
+				
+				n = new Client(i);
+				if(i<valCount+size)
+					n.setValnerable(true);
+				nList.add(n);	
+			}
+			
+			break;
+		default:
+			break;
+		}
+		
+		return nList;
+		
+		
+	}
+	
+public ArrayList<GThEdge> createEdges(ArrayList<GThNode> nodes){
+	
+	  ArrayList<GThEdge> eList = new ArrayList<>();
+	
+		GThNode inode;
+		GThNode jnode;
+		GThEdge ed;
+		for (int i = 0; i < nodes.size(); i++) {
+
+			for (int j = i; j < nodes.size(); j++) {
+				
+				if(i!=j) {
+	
+					inode = nodes.get(i);
+					jnode = nodes.get(j);
+					
+					ed = new GThEdge(inode,jnode);
+//					inode.addEdge(ed);
+//					jnode.addEdge(ed);
+					eList.add(ed);
+				}
+			}
+			
+			
+		}
+	
+		return eList;
+}
+	
+	
+public int createConnections(ArrayList<GThNode> nodes,int conn){
+	
+	conn += (nodes.size()*nodes.size());
+	int count = 0;
+	GThNode n;
+	GThNode jnode;
+	for (int i = 0; i < nodes.size(); i++) {
+		n = nodes.get(i);
+		for (int j = 0; j < nodes.size(); j++) {
+			if(i!=j) {
+				jnode = nodes.get(j);
+				count += conn-(i+j);
+				n.addEdgeConnection(nodes.get(j), conn-(i+j));
+				n.addNeighbor(jnode);
+				jnode.addNeighbor(n);
+			}
+				
+		}
+		
+		
+	}
+	return count;
+	
+}
 	
 	public void initStrategies(int numOfStrategies, Graph g) {
 		
@@ -399,7 +472,6 @@ public class Game {
 
 		Graph<GThNode, GThEdge> g = new SparseGraph<GThNode, GThEdge>();
 
-		 GThNode n;
 		 
 		for (int i = 0; i < edges.size(); i++) {
 			
@@ -494,8 +566,8 @@ public class Game {
 	
 	public void deleteEdge(GThEdge ed) {
 	
-		ed.getStartNode().getNodeEdges().remove(ed);
-		ed.getEndNode().getNodeEdges().remove(ed);
+//		ed.getStartNode().getNodeEdges().remove(ed);
+//		ed.getEndNode().getNodeEdges().remove(ed);
 		
 	this.edges.remove(ed);
 		

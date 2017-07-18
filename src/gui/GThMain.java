@@ -69,6 +69,8 @@ public class GThMain implements ActionListener {
 //	boolean menuadded =false;
 	JTextField txtNumOfClients;
 	
+	JComboBox comboBox_1;
+	
 	static GThMain window;
 
 	/**
@@ -263,7 +265,7 @@ public class GThMain implements ActionListener {
 		JLabel lblDefenceStrategy = new JLabel("Defence Strategy");
 		panel_3.add(lblDefenceStrategy, "2, 10, left, default");
 		
-		JComboBox comboBox_1 = new JComboBox();
+		comboBox_1 = new JComboBox();
 		panel_3.add(comboBox_1, "4, 10, fill, default");
 		
 		JLabel lblNewLabel = new JLabel("Connections");
