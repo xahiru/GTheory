@@ -85,7 +85,8 @@ public class Game {
 				
 	}
 	
-	public Game() {
+	
+	public Game(int i) {
 		this.randomGenerator = new Random();
 		//MAX_SC should be > numNodes + 4
 		MAX_SC = 20;
@@ -410,7 +411,14 @@ public class Game {
 		
 		return g;
 	}
+	
+	public void setGraph(Graph g) {
+		this.mainGraph = g;
+	}
 
+	public Graph getMainGraph() {
+		return mainGraph;
+	}
 
 	public GThNode getLastNode() {
 		return nodes.get(nodes.size()-1);

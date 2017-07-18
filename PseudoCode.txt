@@ -1,0 +1,122 @@
+
+Pseudo code for Game initialization:
+
+Set defence_constant_Alpha, Beta and Gemma constants
+
+Set Network Maximum shared connection SC
+Set number of vertices = N
+Create An EdgeList
+Create A VerticesList
+
+Create Vertices VN
+Set Vi vulnerability (AttackchainstartVertex) to true or false
+If Vi vulnerability = true
+	Set captureCost
+Set Vi type to Client  Vic or Server Vis
+Add VN to VerticesList
+
+Assign initial shared connection ISC of Vi  such that Vi< SC &&  Vic > Vis
+
+For each vertex  Vi = StartVertex SVi
+
+For each vertex  Vj = EndVertex EVj
+
+	If SVi is not equal to SVj
+
+create an Edge E from SVi to EVj
+Set E’s sharedConnections to minimum(SVi .ISC ,  EVj ISC)
+Set E’s failure count = 0
+Set E’s repair rate (MTTR) = 0
+Add to EdgeList
+End Loop
+End Loop
+
+Pseudo code for defense strategies:
+
+Define Profit Vector 2 as Pd1
+Define Profit Vector 2 as Pd2
+
+Create a DefenceStrategyList
+Create a DefenceStrategy
+
+For each Edge Ei in EdgeList
+	Create an EdgePair<Ei , connectionChange>
+	Add EdgePair to DefenceStrategy
+End Loop
+
+Add DefenceStrategy to DefenceStrategyList
+
+Pseudo code for Offense strategies:
+
+Set availableEdgeList = EdgeList
+Create an OffenseStrategyList
+Create an OffenseStrategy
+Create an AttackChain 
+Create an ChainEdgeList with numberOfAttempt
+loop until (requiredChaiLength< AttackChain Length && availableEdgeList is not empty) 
+Select an edge Ei from availableEdgeList
+	If i = 0 check  Ei . StartNode’s vulnerabilty = true 
+		Add Edge Ei to ChainEdgeList
+	else
+	If AttackChain does not contain edge Ei
+	Add Edge Ei to ChainEdgeList
+	Remove Edge Ei from availableEdgeList	
+End loop
+
+Add ChainEdgeList to AttackChain
+Add AttackChain to OffenseStrategy
+
+Add  OffenseStrategy to OffenseStrategyList
+
+
+
+
+Pseudo code for Game
+
+Initialize game
+
+Set stepCounter = 0
+
+Create OffenseStrategies
+Create DefenceStrategies
+
+Loop over all  combinations of  DefenceStrategies and  OffenseStrategies
+ Increment stepCounter
+
+defense cost = Sum all EdgePair’s connectionChange in DefenceStrategy x  defence_constant_Alpha
+
+AFR0 = Sum (all edge Ei  from EdgeList shared connection x Ei   link fail rate)/Sum (all edge Ei from EdgeList shared connection)
+
+Attack:
+	For each AttackStrategy’s AttachChain
+		BottleNeckNumber = AttachChain’s lowest Connection among all edges
+		For all edges Ei set number of sharedConnections = sharedConnections - min(BottleNeckNumber,numberOfAttempt)
+		If BottleNeckNumber > numberOfAttempt
+			Ei sharedConnections = 0		
+	End loop
+
+Attack cost = sum (AttackStrategy’s all AttachChain Length x numberOfAttempt x Beta + captureCost)
+
+AFR1 = Sum (all edge Ei  from EdgeList shared connection x Ei   link fail rate)/Sum (all edge Ei from EdgeList shared connection)
+
+
+Pdi2 = defense cost - Attack cost
+Pdi1 = (AFR1 - AFR0 ) / AFR0 
+
+ 
+Calculate link failure rate:
+	For all  Edge Ei in EdgeList get shareConnection
+		If Ei sharedConnections = 0
+				increment Ei  failureCount 
+		Else 
+				 increment  Ei  repairCount
+
+		Ei MTTR = failureCount / stepCounter		
+		Ei MTBF = repairCount / stepCounter
+		
+		Ei LinkFailRate = Ei MTTR / (Ei MTTR + Ei MTBF)
+		
+End Loop	
+
+
+

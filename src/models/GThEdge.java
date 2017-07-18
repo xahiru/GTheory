@@ -30,7 +30,9 @@ public class GThEdge {
 		this.endNode = endNode;
 //		sharedConns = new ArrayList<Connection>();
 		
-		this.initialConnCount = startNode.INITIAL_CONNECTIONS>endNode.INITIAL_CONNECTIONS?endNode.INITIAL_CONNECTIONS:startNode.INITIAL_CONNECTIONS;
+		this.initialConnCount = startNode.INITIAL_CONNECTIONS>=endNode.INITIAL_CONNECTIONS?endNode.INITIAL_CONNECTIONS:startNode.INITIAL_CONNECTIONS;
+		
+		this.sharedConns = this.initialConnCount;
 		
 //		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
 		
@@ -40,7 +42,7 @@ public class GThEdge {
 	
 	public void updateEdgeState() {
 //		this.sharedConns = startNode.getAvaialableConnections().size()>endNode.getAvaialableConnections().size()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
-		this.sharedConns = startNode.getAvaialableConnections()>endNode.getAvaialableConnections()?startNode.getAvaialableConnections():endNode.getAvaialableConnections();
+		this.sharedConns = startNode.getAvaialableConnections()>=endNode.getAvaialableConnections()?endNode.getAvaialableConnections():startNode.getAvaialableConnections();
 		
 	}
 	

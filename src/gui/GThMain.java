@@ -50,14 +50,15 @@ import models.GThEdge;
 import models.GThNode;
 import models.Game;
 import models.Strategy;
+import javax.swing.border.EtchedBorder;
 
 public class GThMain implements ActionListener {
 
 	private JFrame frame;
-	private JTextField textField;
-	private JTextField txtNumOfServers;
-	private JTextField txtNumOfEdges;
-	JButton btnTestgraph;
+	JTextField textTotalConnections;
+	JTextField txtNumOfServers;
+	JTextField txtNumOfEdges;
+	JButton btnStrategy;
 	JButton btnEdge;
 	JButton btnRun;
 	private Graph graph;
@@ -66,7 +67,9 @@ public class GThMain implements ActionListener {
 	JMenu modeMenu;
 	Game game;
 //	boolean menuadded =false;
-	private JTextField txtNumOfClients;
+	JTextField txtNumOfClients;
+	
+	static GThMain window;
 
 	/**
 	 * Launch the application.
@@ -75,8 +78,9 @@ public class GThMain implements ActionListener {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GThMain window = new GThMain();
+					window = new GThMain();
 					window.frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -97,7 +101,7 @@ public class GThMain implements ActionListener {
 	 */
 	private void initialize() {
 
-//		 game = new Game();
+		 game = new Game(200,1,3);
 		frame = new JFrame();
 		menuBar = new JMenuBar();
 		
@@ -172,18 +176,23 @@ public class GThMain implements ActionListener {
 		btnEdge.addActionListener(this);
 		toolBar.add(btnEdge);
 		
-		 btnTestgraph = new JButton("Network");
-		toolBar.add(btnTestgraph);
+		 btnStrategy = new JButton("Strategy");
+		toolBar.add(btnStrategy);
 		
 		JButton btnNetwork = new JButton("+ Network");
 		btnNetwork.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GThNetwork().setVisible(true);
+				
+				
+				
+				GThNetwork graphNet = new GThNetwork();
+				graphNet.setVisible(true);
+//				game = graphNet.getGame();
 				
 			}
 		});
 		toolBar.add(btnNetwork);
-		btnTestgraph.addActionListener(this);
+		btnStrategy.addActionListener(this);
 		
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
@@ -223,6 +232,7 @@ public class GThMain implements ActionListener {
 		panel_3.add(lblNewLabel_1, "2, 2, left, default");
 		
 		txtNumOfServers = new JTextField();
+		txtNumOfServers.setEnabled(false);
 		txtNumOfServers.setText("1");
 		panel_3.add(txtNumOfServers, "4, 2, fill, default");
 		txtNumOfServers.setColumns(10);
@@ -231,6 +241,7 @@ public class GThMain implements ActionListener {
 		panel_3.add(lblClients, "2, 4, left, default");
 		
 		txtNumOfClients = new JTextField();
+		txtNumOfClients.setEnabled(false);
 		txtNumOfClients.setText("2");
 		panel_3.add(txtNumOfClients, "4, 4, fill, default");
 		txtNumOfClients.setColumns(10);
@@ -255,16 +266,16 @@ public class GThMain implements ActionListener {
 		JComboBox comboBox_1 = new JComboBox();
 		panel_3.add(comboBox_1, "4, 10, fill, default");
 		
-		JLabel lblNewLabel = new JLabel("services");
+		JLabel lblNewLabel = new JLabel("Connections");
 		panel_3.add(lblNewLabel, "2, 12, left, center");
 		
-		textField = new JTextField();
-		textField.setEnabled(false);
-		panel_3.add(textField, "4, 12, fill, default");
-		textField.setColumns(10);
+		textTotalConnections = new JTextField();
+		textTotalConnections.setEnabled(false);
+		panel_3.add(textTotalConnections, "4, 12, fill, default");
+		textTotalConnections.setColumns(10);
 		
 		JPanel panel_7 = new JPanel();
-		panel_7.setBorder(new TitledBorder(null, "Nodes List", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_7.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Results", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_2.add(panel_7, BorderLayout.CENTER);
 		panel_7.setLayout(new BoxLayout(panel_7, BoxLayout.X_AXIS));
 		
@@ -298,7 +309,7 @@ public class GThMain implements ActionListener {
 			 
 //			 System.out.print("btnRun");
 			 
-			 Strategy st = game.populateRandStrategy();
+       
 			 
 //			 System.out.print("stlist size:"+st.getParticipants().size());
 //			 
@@ -308,27 +319,34 @@ public class GThMain implements ActionListener {
 //				
 //			}
 			 
-			 displayGraph(game.createCompeletGraph());
+			 displayGraph(game.getMainGraph());
+//			 displayGraph(graph);
 		 }
 		 
-		 if(e.getSource().equals(btnTestgraph)) {
+		 if(e.getSource().equals(btnStrategy)) {
 			 
-			 int clients = Integer.valueOf(txtNumOfClients.getText());
-			 int servers = Integer.valueOf(txtNumOfServers.getText());
-//			 game = new Game(2, 5, 1);
-			 game.setNumClients(clients);
-			 game.setNumServers(servers);
-			 game.setNumNodes(game.getNumClients()+game.getNumServers());
-//			 game.initGraph();
-			 graph =	 game.getGraph(); 
+//			 int clients = Integer.valueOf(txtNumOfClients.getText());
+//			 int servers = Integer.valueOf(txtNumOfServers.getText());
+////			 game = new Game(2, 5, 1);
+//			 game.setNumClients(clients);
+//			 game.setNumServers(servers);
+//			 game.setNumNodes(game.getNumClients()+game.getNumServers());
+////			 game.initGraph();
+//			 graph =	 game.getGraph(); 
+//			 
+//				
+////				graph =	game.testGraph();
+////				game.directedGraph();
+////				graph =	game.directedGraph();
+//		
+//			displayGraph(graph);
 			 
-				
-//				graph =	game.testGraph();
-//				game.directedGraph();
-//				graph =	game.directedGraph();
-		
-			displayGraph(graph);
+			 new NodeWindow().setVisible(true);
+			 
+			
+			 
 		 }
+		 
 		 if(e.getSource().equals(btnEdge)) {
 			
 			 graph = game.getGraph();
