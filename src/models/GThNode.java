@@ -12,9 +12,9 @@ public class GThNode {
 //	final int INITIAL_CONNECTIONS;
 	
 
-	private ArrayList<GThNode> neighbors;
+	private ArrayList<GThNode> neighbors = new ArrayList<>();
 	private HashMap<GThNode, Integer> edgeConnections = new HashMap <GThNode, Integer>();
-	
+	private ArrayList<GThEdge> edges = new ArrayList<>();
 	
 	private int availableConn;
 	
@@ -100,6 +100,22 @@ public class GThNode {
 	public void setValnerable(boolean valnerable) {
 		this.valnerable = valnerable;
 	}
+
+	public ArrayList<GThEdge> getEdges() {
+		return edges;
+	}
+
+	public void setEdges(ArrayList<GThEdge> edges) {
+		this.edges = edges;
+	}
+
+	public void addEdge(GThEdge ed) {
+		edges.add(ed);
+		
+	}
+	
+	
+	
 
 	
 

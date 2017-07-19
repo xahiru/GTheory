@@ -1,14 +1,18 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 import java.util.Vector;
 
 import org.apache.commons.collections15.Factory;
 
+import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
@@ -28,8 +32,8 @@ public class Game {
 	int numServers;
 	int numClients;
 	
-	int vulServer;
-	int vulClient;
+	public int vulServer;
+	public int vulClient;
 	
 	
 
@@ -61,18 +65,25 @@ public class Game {
 	//	All states/ a list of all states
 	ArrayList<HashMap> gameStates = new ArrayList<>();
 	
-	ArrayList<AttackStrategy> attkStrategies = new ArrayList<>();
-	ArrayList<DefenceStrategy> defStrategies = new ArrayList<>();
+	public ArrayList<AttackStrategy> attkStrategies = new ArrayList<>();
+	public ArrayList<DefenceStrategy> defStrategies = new ArrayList<>();
+	
+	public List<List<AttackStrategy>> offence = new ArrayList<List<AttackStrategy>>();
+	public List<List<DefenceStrategy>> defence = new ArrayList<List<DefenceStrategy>>();
 	
 	
 	
 	
-	public Game(int maxsc,int numServers, int numClients) {
+	
+	
+	public Game(int maxsc,int numServers, int vulServers, int numClients, int vulClients) {
 	
 		this.MAX_SC = maxsc;
 		
 		this.numServers = numServers;
 		this.numClients = numClients;
+		this.vulClient = vulClients;
+		this.vulServer = vulServers;
 		
 		
 		this.numNodes = numServers + numClients;
@@ -101,16 +112,16 @@ public class Game {
 	
 	
 
-		AttackStrategy attStr = new  AttackStrategy(edges,3);
+//		AttackStrategy attStr = new  AttackStrategy(edges,3);
 //		AttackStrategy attStr2 = new  AttackStrategy(edges,3);
 //		AttackStrategy attStr3 = new  AttackStrategy(edges,3);
 //		AttackStrategy attStr4 = new  AttackStrategy(edges,3);
-		attkStrategies.add(attStr);
+//		attkStrategies.add(attStr);
 //		attkStrategies.add(attStr2);
 //		attkStrategies.add(attStr3);
 //		attkStrategies.add(attStr4);
 //		
-		attack.addElement(attkStrategies);
+//		attack.addElement(attkStrategies);
 		
 	
 		
@@ -200,9 +211,46 @@ public class Game {
 	
 	
 	
-	public void addRandDS(int i) {
-		defStrategies.add(createRandomDefenceStrategy(i));
+	public void addRandDS(int str, int offcount) {
+		for (int i = 0; i < offcount; i++) {
+			
+			for (int j = i; j < str+i; j++) {
+				defStrategies.add(createRandomDefenceStrategy(j));
+			}
+			
+			defence.add(defStrategies);
+		}
+		
+		
 	}
+	
+	public void addRandOS( int length, int offcount) {
+		
+		
+		for (int i = 0; i < offcount; i++) {
+			
+			for (int j = i; j < length+i; j++) {
+				
+				attkStrategies.add(createRandAttackStrategy(edges,length, 30+j));
+			}
+			
+			offence.add(attkStrategies);
+		}
+		
+		
+	}
+	
+	
+	
+	public AttackStrategy createRandAttackStrategy(ArrayList<GThEdge> networkEdges, int length, int attempt ) {
+		
+		AttackStrategy atStr = new AttackStrategy(networkEdges, length, attempt);
+		
+		return atStr;
+				
+		
+	}
+	
 	
 	public DefenceStrategy createRandomDefenceStrategy(int staticNode) {
 		
@@ -240,7 +288,11 @@ public class Game {
 				
 				if(i!=j) {
 					
-					nodes.get(i).updateEdgeConnection(nodes.get(j),  	nodes.get(i).getEdgeConnection(nodes.get(j))-(j+k));
+					int val = 	nodes.get(i).getEdgeConnection(nodes.get(j))-(j+k);
+					if(val<0)
+						val = j;
+					
+					nodes.get(i).updateEdgeConnection(nodes.get(j), val );
 				}
 			}
 			
@@ -374,8 +426,8 @@ public ArrayList<GThEdge> createEdges(ArrayList<GThNode> nodes){
 					jnode = nodes.get(j);
 					
 					ed = new GThEdge(inode,jnode);
-//					inode.addEdge(ed);
-//					jnode.addEdge(ed);
+					inode.addEdge(ed);
+					jnode.addEdge(ed);
 					eList.add(ed);
 				}
 			}
@@ -412,14 +464,6 @@ public int createConnections(ArrayList<GThNode> nodes,int conn){
 	
 }
 	
-	public void initStrategies(int numOfStrategies, Graph g) {
-		
-		
-		
-		
-	}
-	
-	
 	
 	
 	
@@ -435,36 +479,7 @@ public int createConnections(ArrayList<GThNode> nodes,int conn){
 		System.out.println(s+" : "+msg);
 	}
 	
-	public Graph testGraph() {
-		
-		// Graph<V, E> where V is the type of the vertices
-		 // and E is the type of the edges
-		 Graph<Integer, String> g = new SparseMultigraph<Integer, String>();
-		 // Add some vertices. From above we defined these to be type Integer.
-		 g.addVertex((Integer)1);
-		 g.addVertex((Integer)2);
-		 g.addVertex((Integer)3);
-		 // Add some edges. From above we defined these to be of type String
-		 // Note that the default is for undirected edges.
-		 g.addEdge("Edge-A", 1, 2); // Note that Java 1.5 auto-boxes primitives
-		 g.addEdge("Edge-B", 2, 3);
-		 // Let's see what we have. Note the nice output from the
-		 // SparseMultigraph<V,E> toString() method
-		 System.out.println("The graph g = " + g.toString());
-		 // Note that we can use the same nodes and edges in two different graphs.
-		 Graph<Integer, String> g2 = new SparseMultigraph<Integer, String>();
-		 g2.addVertex((Integer)1);
-		 g2.addVertex((Integer)2);
-		 g2.addVertex((Integer)3);
-		 g2.addEdge("Edge-A", 1,3);
-		 g2.addEdge("Edge-B", 2,3, EdgeType.UNDIRECTED);
-		 g2.addEdge("Edge-C", 3, 2, EdgeType.UNDIRECTED);
-		 g2.addEdge("Edge-P", 2,3); // A parallel edge
-		 System.out.println("The graph g2 = " + g2.toString()); 
-		 
-		 return g2;
-		
-	}
+
 	
 	
 
@@ -591,7 +606,119 @@ public int createConnections(ArrayList<GThNode> nodes,int conn){
 	}
 	
 	
+	public void printALLpaths(int start, int end) {
+		
+//		AllPaths allP = new AllPaths(mainGraph, nodes.get(start), nodes.get(end));
+//		List<List<GThEdge>> allPaths = allP.getAllPathsBetweenNodes();
+		List<List<GThEdge>> allPaths = new ArrayList<List<GThEdge>>();
+		
+		getPaths(nodes.get(2), new ArrayList<GThNode>() ,allPaths);
+		
+		for (Iterator iterator = allPaths.iterator(); iterator.hasNext();) {
+			List<GThEdge> list = (List<GThEdge>) iterator.next();
+			System.out.println("newlist");
+			for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
+				GThEdge gThEdge = (GThEdge) iterator2.next();
+				System.out.println(gThEdge.startNode.getId()+"->"+gThEdge.endNode.getId());
+				
+			}
+			
+		}
+		
+		
+	}
 	
+	public class AllPaths {
+
+	    private  List<List<GThEdge>> allPaths;
+	    private Graph<GThNode, GThEdge> graph;
+	    private GThNode startNode;
+	    private GThNode endNode;
+	    
+	    
+
+	    public AllPaths(Graph<GThNode, GThEdge> graph, GThNode startNode, GThNode endNode) {
+			super();
+			this.graph = graph;
+			this.startNode = startNode;
+			this.endNode = endNode;
+		}
+
+		public  List<List<GThEdge>> getAllPathsBetweenNodes() {
+	        allPaths = new ArrayList<List<GThEdge>>();
+
+	        List<GThEdge> currentPath = new ArrayList<GThEdge>();
+
+	        findAllPaths(startNode, startNode, endNode, currentPath, graph);
+
+	        return allPaths;
+	    }
+
+	    private  int findAllPaths(GThNode currentNode, GThNode startNode, GThNode endNode, List<GThEdge> currentPath, Graph<GThNode, GThEdge> graph) {
+	        Collection<GThEdge> outgoingEdges = currentNode.getEdges();
+	        
+	       
+
+	        for (GThEdge outEdge : outgoingEdges) {
+	        	GThNode outNode = outEdge.endNode;
+
+	            if (outNode.equals(startNode)) {
+	                List<GThEdge> cyclePath = new ArrayList<GThEdge>(currentPath);
+	                cyclePath.add(outEdge);
+	                System.out.println("Found cycle provoked by path " + cyclePath);
+	                continue;
+	            }
+
+	            List<GThEdge> newPath = new ArrayList<GThEdge>(currentPath);
+	            newPath.add(outEdge);
+
+	            if (outNode.equals(endNode)) {
+	                allPaths.add(newPath);
+	                continue;
+	            }
+	            if(currentNode == this.startNode)
+	    	        return 0;
+
+	            findAllPaths(outNode, startNode, endNode, newPath, graph);
+	        }
+	   
+	        return 0;
+	    }
+	    
+	    
+	}
+	
+	public void getPaths (GThNode n, ArrayList<GThNode> nodesVisited, List<List<GThEdge>> mainList) {
+//	    int pathCount = 0;
+		
+//		List<List<GThEdge>> allPaths = new ArrayList<List<GThEdge>>();
+		
+	    ArrayList<GThEdge> edgeList = new ArrayList<>();
+	    
+	    for (GThEdge p : n.getEdges()) {
+	    	GThNode otherSide = p.endNode; // Where this function basically takes a node and gets the other node in the path
+	        if (!(nodesVisited.contains(otherSide))) {
+	            nodesVisited.add(otherSide);
+	            getPaths(otherSide, new ArrayList<GThNode>(nodesVisited), mainList); 
+	            edgeList.add(p);
+	            if(!mainList.contains(edgeList))
+	            		mainList.add(edgeList);
+	            
+	        }
+	    }
+//	    allPaths.add(edgeList);
+//	    return allPaths;
+	}
+	
+	
+	public  List<List<GThEdge>> getPaths(ArrayList<GThEdge> edgeList) {
+		List<List<GThEdge>> mainList = new ArrayList<List<GThEdge>>();
+		
+		return mainList;
+		
+	}
+
+
 	
 	
 }

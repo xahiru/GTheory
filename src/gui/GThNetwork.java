@@ -77,6 +77,10 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 	JLabel lblEdge;
 	
 	int count = 0;
+	private JTextField textVulServer;
+	private JLabel lblVul;
+	private JLabel lblVul_1;
+	private JTextField txtVulClient;
 
 
 	/**
@@ -113,6 +117,10 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 				FormSpecs.RELATED_GAP_COLSPEC,
 				FormSpecs.DEFAULT_COLSPEC,
 				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),},
 			new RowSpec[] {
 				FormSpecs.RELATED_GAP_ROWSPEC,
@@ -131,6 +139,13 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		innerpanel1.add(txtServers, "4, 2, fill, default");
 		txtServers.setColumns(10);
 		
+		lblVul = new JLabel(">vul");
+		innerpanel1.add(lblVul, "6, 2, right, default");
+		
+		textVulServer = new JTextField();
+		innerpanel1.add(textVulServer, "8, 2, fill, default");
+		textVulServer.setColumns(10);
+		
 		JLabel lblNewLabel_1 = new JLabel("Clients");
 		innerpanel1.add(lblNewLabel_1, "2, 4, left, default");
 		
@@ -139,6 +154,13 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		txtClients.setColumns(10);
 		
 		String twoLines = "Max Shared\n Connections" ; 
+		
+		lblVul_1 = new JLabel(">vul");
+		innerpanel1.add(lblVul_1, "6, 4, right, default");
+		
+		txtVulClient = new JTextField();
+		innerpanel1.add(txtVulClient, "8, 4, fill, default");
+		txtVulClient.setColumns(10);
 		JLabel lblMaxSharedConnections = new JLabel( "<html>" + twoLines.replaceAll("\\n", "<br>") + "</html>");
 		innerpanel1.add(lblMaxSharedConnections, "2, 6, right, default");
 		
@@ -246,11 +268,25 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 			GThMain.window.txtNumOfEdges.setText(Integer.toString(g.getNumEdges()));
 			GThMain.window.textTotalConnections.setText(Integer.toString(g.getTotalNumConnections()));
 //			GThMain.window.btnRun.
-			GThMain.window.game.addRandDS(2);
-//			GThMain.window.comboBox_1.add("stragyone");
+			GThMain.window.game.addRandDS(5,3);
+//			GThMain.window.game.addRandDS(3);
+//			GThMain.window.game.addRandDS(2);
+//			GThMain.window.game.addRandDS(1);
+//			GThMain.window.game.addRandDS(3);
+//			GThMain.window.game.addRandDS(3);
+			
+			GThMain.window.game.addRandOS(2, 3);
+			
+			GThMain.window.createComboModel();
+			
+//			
+			GThMain.window.createComboModel2();
+			
 			
 			
 			GThMain.window.displayGraph(g.getMainGraph());
+			
+			
 			
 			
 			
@@ -262,8 +298,10 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 
 			int clients = Integer.valueOf(txtClients.getText());
 			int servers = Integer.valueOf(txtServers.getText());
+			int vulClients = Integer.valueOf(txtVulClient.getText());
+			int vulServers = Integer.valueOf(textVulServer.getText());
 			int maxsc = Integer.valueOf(txtMaxsc.getText());
-			g = new Game(maxsc, servers, clients);
+			g = new Game(maxsc, servers,vulServers, clients,vulClients);
 			
 			nodes = g.getNodes();
 			edges = g.getEdges();

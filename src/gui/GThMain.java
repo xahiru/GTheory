@@ -1,17 +1,16 @@
 package gui;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Paint;
-import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -23,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.collections15.Transformer;
@@ -32,25 +32,18 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
-import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
-import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
+import models.DefenceStrategy;
 //import edu.uci.ics.jung.visualization
 import models.GThEdge;
 import models.GThNode;
 import models.Game;
-import models.Strategy;
-import javax.swing.border.EtchedBorder;
 
 public class GThMain implements ActionListener {
 
@@ -69,7 +62,8 @@ public class GThMain implements ActionListener {
 //	boolean menuadded =false;
 	JTextField txtNumOfClients;
 	
-	JComboBox comboBox_1;
+	JComboBox<String> comboBox_1;
+	JComboBox<String> comboBox;
 	
 	static GThMain window;
 
@@ -103,7 +97,7 @@ public class GThMain implements ActionListener {
 	 */
 	private void initialize() {
 
-		 game = new Game(200,1,3);
+		 game = new Game(200,1,1,3,2);
 		frame = new JFrame();
 		menuBar = new JMenuBar();
 		
@@ -259,13 +253,23 @@ public class GThMain implements ActionListener {
 		JLabel lblNewLabel_3 = new JLabel("Attack Strategy");
 		panel_3.add(lblNewLabel_3, "2, 8, left, default");
 		
-		JComboBox comboBox = new JComboBox();
+		 comboBox = new JComboBox();
 		panel_3.add(comboBox, "4, 8, fill, default");
 		
 		JLabel lblDefenceStrategy = new JLabel("Defence Strategy");
 		panel_3.add(lblDefenceStrategy, "2, 10, left, default");
 		
 		comboBox_1 = new JComboBox();
+		
+		
+//		JComboBox<String> comboLanguage = new JComboBox<String>();
+		 
+		// add items to the combo box
+//		comboLanguage.addItem("English");
+//		comboLanguage.addItem("French");
+//		comboLanguage.addItem("Spanish");
+//		comboLanguage.addItem("Japanese");
+//		comboLanguage.addItem("Chinese");
 		panel_3.add(comboBox_1, "4, 10, fill, default");
 		
 		JLabel lblNewLabel = new JLabel("Connections");
@@ -418,4 +422,42 @@ public class GThMain implements ActionListener {
 
 		
 	}
+	 
+	 public void createComboModel(){
+		 
+		 
+		 Vector<String> dfsIndext = new Vector<String>();
+		 
+		 for (int i = 0; i < game.defence.size(); i++) {
+			 
+			 dfsIndext.addElement("StrategyList"+Integer.toString(i) +": "+ game.defence.get(i).size());
+		}
+		 
+		
+		 
+//		return dfsIndext;
+		 comboBox_1.setModel(new DefaultComboBoxModel(dfsIndext));
+//		 comboBox_1 = new JComboBox<String>(dfsIndext);
+			 }
+	 
+	 
+	 public void createComboModel2(){
+		 
+		 
+		 Vector<String> ofsIndext = new Vector<String>();
+		 
+		 for (int i = 0; i < game.offence.size(); i++) {
+			 
+			 ofsIndext.addElement("Offense"+Integer.toString(i) +": "+ game.offence.get(i).size());
+		}
+		 
+		
+		 
+//		return dfsIndext;
+		 comboBox.setModel(new DefaultComboBoxModel(ofsIndext));
+//		 comboBox_1 = new JComboBox<String>(dfsIndext);
+			 }
+	
+
+	 
 }

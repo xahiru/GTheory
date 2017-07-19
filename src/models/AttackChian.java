@@ -45,7 +45,14 @@ public class AttackChian {
 	}
 	
 	public boolean addAnEdgeToChain(GThEdge edge) {
-		GThEdge lastEdge = chain.get(chain.size()-1);	
+		GThEdge lastEdge;
+		if(!chain.isEmpty())
+		 lastEdge = chain.get(chain.size()-1);	
+		else {
+			chain.add(edge);
+			return true;
+		}
+			
 //		System.out.println("lastedge endnode id:"+lastEdge.startNode.id+"==>"+lastEdge.endNode.id);
 //		System.out.println("new edge startnode"+edge.startNode.id+"==>"+edge.endNode.id);
 		

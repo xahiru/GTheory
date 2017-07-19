@@ -22,7 +22,7 @@ public class AttackStrategy extends TimerTask {
 		
 	}
 	
-	AttackStrategy(ArrayList<GThEdge> networkEdges, int length) {
+	AttackStrategy(ArrayList<GThEdge> networkEdges, int chains, int attempt) {
 		this.randomGenerator = new Random();
 		this.AttackChainList = new ArrayList<>();
 		this.networkEdges = networkEdges;
@@ -34,10 +34,33 @@ public class AttackStrategy extends TimerTask {
 			
 		}
 		
-		while(AttackChainList.size()<length) {
-			run();
-			addAttackChain(createRandomAttackChain(2, 30));
+		if(vulStartEdges.size()>chains)
+			chains = vulStartEdges.size();
+		
+		int length = networkEdges.size()/chains;
+		
+		int temp = 0;		
+		
+		for (int j = 0; j < chains; j++) {
+			
+			AttackChian	 attackChain = new AttackChian(attempt,new ArrayList<GThEdge>());
+			
+			for (int i = 0; i < networkEdges.size(); i++) {
+				
+				
+				if(attackChain.addAnEdgeToChain(networkEdges.get(i)) && temp<length) {
+					temp++;
+					System.out.println("edge added");
+				}
+					
+				
+			}
+		
+			addAttackChain(attackChain);
+			
 		}
+		
+		
 		
 	}
 	
