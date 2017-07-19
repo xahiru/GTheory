@@ -2,7 +2,7 @@ package models;
 
 import java.util.HashMap;
 
-public class DefenceStrategy {
+public class DefenceStrategy extends Strategy{
 	
 	
 	HashMap<GThEdge, Integer> edgesList = new HashMap<GThEdge, Integer>();

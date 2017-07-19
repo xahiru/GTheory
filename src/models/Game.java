@@ -41,7 +41,8 @@ public class Game {
 		
 	Graph mainGraph;
 	
-//	int networkV [];
+	
+	Vector profit = new Vector<>();
 	
 	public static int MAX_SC;
 	public static int SC_0;
@@ -70,6 +71,9 @@ public class Game {
 	
 	public List<List<AttackStrategy>> offence = new ArrayList<List<AttackStrategy>>();
 	public List<List<DefenceStrategy>> defence = new ArrayList<List<DefenceStrategy>>();
+	
+	public DefenceStrategy bestDefence = null;
+	public int bestDefenceIndex;
 	
 	
 	
@@ -169,11 +173,7 @@ public class Game {
 		return createCompeletGraph();
 	}
 	
-	public void changeGameState(int i) {
-		
-		updateRandNodesConn(i);
-		updateEdges(); 
-	}
+
 	
 	
 	
@@ -254,7 +254,9 @@ public class Game {
 	
 	public DefenceStrategy createRandomDefenceStrategy(int staticNode) {
 		
-		changeGameState(staticNode);
+		
+		updateRandNodesConn(staticNode);
+		updateEdges(); 
 		
 		
 		HashMap<GThEdge, Integer> edgeWeigths = new HashMap <GThEdge, Integer>();
@@ -293,6 +295,8 @@ public class Game {
 						val = j;
 					
 					nodes.get(i).updateEdgeConnection(nodes.get(j), val );
+//					System.out.println("COnnection updated:"+nodes.get(i).getEdgeConnection(nodes.get(j)));
+					
 				}
 			}
 			
@@ -467,10 +471,6 @@ public int createConnections(ArrayList<GThNode> nodes,int conn){
 	
 	
 	
-	public Strategy populateRandStrategy() {
-		
-		return new Strategy(nodes.get(0), 5);
-	}
 	
 	
 
@@ -719,6 +719,242 @@ public int createConnections(ArrayList<GThNode> nodes,int conn){
 	}
 
 
+//	void GeneratePermutations(List<List<Strategy>> Lists, HashMap<DefenceStrategy, AttackStrategy> result, int depth, Strategy current)
+//	{
+//	    if(depth == Lists.size())
+//	    {
+//	       result.add(current);
+//	       return;
+//	     }
+//
+//	    for(int i = 0; i < Lists.get(depth).size(); ++i)
+//	    {
+//	        GeneratePermutations(Lists, result, depth + 1, current + Lists.get(depth).get(i));
+//	    }
+//	}
 	
+	private HashMap<DefenceStrategy,AttackStrategy >  GeneratePermutations(List<DefenceStrategy> dfsl,List<AttackStrategy> atfs ) {
+		
+		HashMap<DefenceStrategy,AttackStrategy > list  = new HashMap<DefenceStrategy,AttackStrategy>();
+		
+		for (int i = 0; i < dfsl.size(); i++) {
+			for (int j = 0; j < atfs.size(); j++) {
+				if(i!= j) {
+					list.put(dfsl.get(i), atfs.get(j));
+					
+					
+				}
+				
+			}
+			
+		}
+		return list;
+		
+	}
+	
+	
+
+	public void play(int defIn, int ofIn) {
+		
+		int failcount = 1;
+		int repairCount = 1;
+		int stepCount = 1;
+		
+		int AFR0 = 0;
+		int AFR1 = 0;
+		
+		AFR0 =  AFR() ;
+		
+		List<DefenceStrategy> dfList =  defence.get(defIn);
+		List<AttackStrategy> attackList =  offence.get(ofIn);
+		
+		HashMap<DefenceStrategy,AttackStrategy > strategyPair =	GeneratePermutations(defence.get(defIn),offence.get(ofIn));
+		
+		HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>> profitMatrix1 =	new HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>>();
+		HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>> profitMatrix2 =	new HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>>();
+		
+		HashMap<DefenceStrategy, AttackStrategy> val = new HashMap<DefenceStrategy, AttackStrategy>();
+		
+		for (HashMap.Entry<DefenceStrategy, AttackStrategy> entry : strategyPair.entrySet()) {
+			
+			DefenceStrategy def = entry.getKey();
+			AttackStrategy off = entry.getValue();
+
+			double defCost =	def.calculateCost(); 
+			
+			
+//			updateEdges();
+			stepCount++;
+			reculculateLFR( failcount,  repairCount,  stepCount);
+			
+			
+					
+			attack(off);
+			
+			stepCount++;
+			reculculateLFR( failcount,  repairCount,  stepCount);
+			
+			
+			double attCost = off.calculateCost();
+			
+			AFR1 = AFR();
+			
+//			profit.addElement(defCost-defCost);
+			double p = defCost-defCost;
+			
+			double afr = 0;
+			
+			if(AFR0!= 0)
+			 afr = (AFR1- AFR0)/AFR0;
+			
+			
+			val.put(def, off);
+	
+			profitMatrix1.put(p,val);
+			profitMatrix2.put( afr, val);
+			
+			
+		 
+		}
+		
+		
+		bestDefence = optimizeParetoFront(profitMatrix1,profitMatrix2);
+		
+		bestDefenceIndex = dfList.indexOf(bestDefence);
+	}
+	
+	
+	public DefenceStrategy optimizeParetoFront(HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>> profitMatrix1, HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>> profitMatrix2) {
+		
+		HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>>  pFront = new HashMap<Double, HashMap<DefenceStrategy, AttackStrategy>>();
+	
+		DefenceStrategy optimumDf = null;
+					double c = 0;
+					double c2 = 0;
+					
+					for (HashMap.Entry<Double, HashMap<DefenceStrategy, AttackStrategy>> entry : 	profitMatrix1.entrySet()) {
+						
+						c = entry.getKey();
+						HashMap<DefenceStrategy, AttackStrategy>	v = entry.getValue();
+						
+						for(	HashMap.Entry<DefenceStrategy, AttackStrategy>  entmap : entry.getValue().entrySet()) {
+							
+							DefenceStrategy df = entmap.getKey();
+							
+							for (HashMap.Entry<Double, HashMap<DefenceStrategy, AttackStrategy>> entryTwo : 	profitMatrix2.entrySet()) {
+								
+								c2 = entryTwo.getKey();
+								HashMap<DefenceStrategy, AttackStrategy>	vv = entry.getValue();
+								
+								for(HashMap.Entry<DefenceStrategy, AttackStrategy>  mp2ent: entryTwo.getValue().entrySet()) {
+									
+									DefenceStrategy df2 = mp2ent.getKey();
+									
+									if(df.equals(df2) && c<=c) {
+										
+										pFront.put(c,v);
+								}else if(df.equals(df2)) {
+									pFront.put(c2,vv);
+									
+								}
+								
+									} } }
+								}
+
+					 c = 0;
+					 c2 = 0;
+					
+					 for (HashMap.Entry<Double, HashMap<DefenceStrategy, AttackStrategy>> entry :  pFront.entrySet()) {
+					 	c = entry.getKey();
+						HashMap<DefenceStrategy, AttackStrategy>	v = entry.getValue();	
+						
+							
+						for (HashMap.Entry<Double, HashMap<DefenceStrategy, AttackStrategy>> entryTwo : 	profitMatrix2.entrySet()) {
+							c2 = entryTwo.getKey();
+							HashMap<DefenceStrategy, AttackStrategy>	vv = entryTwo.getValue();	
+							if(vv.equals(v) && c>c2) {
+								pFront.remove(c,v);
+							
+							}
+						}
+							
+						for (HashMap.Entry<Double, HashMap<DefenceStrategy, AttackStrategy>> entryThree : 	profitMatrix1.entrySet()) {
+								c2 = entryThree.getKey();
+								HashMap<DefenceStrategy, AttackStrategy>	vvv = entryThree.getValue();	
+								if(vvv.equals(v) && c>c2) {
+									pFront.remove(c,v);
+								
+							}
+							
+							
+						}
+					 	
+					 }
+					 
+					 double kc = 1000000000;
+					 for (HashMap.Entry<Double, HashMap<DefenceStrategy, AttackStrategy>> entry :  pFront.entrySet()) {
+						 	
+						 c = entry.getKey();
+						 kc = c<kc? c: kc;
+						 
+						
+						 for (Iterator iterator = entry.getValue().keySet().iterator(); iterator.hasNext();) {
+							 DefenceStrategy attackStrategy = (DefenceStrategy) iterator.next();
+							 optimumDf = attackStrategy;
+							
+						}
+						  
+						 
+						 		
+								
+					 }
+					
+					
+						
+				return 	optimumDf;
+							
+		}
+	
+	public void reculculateLFR(int failcount, int repairCount, int stepCount) {
+		
+		for (int i = 0; i < edges.size(); i++) {
+			
+			int con = edges.get(i).getSharedConns();
+			
+			if (con == 0) {
+				failcount++;
+			}else {
+				repairCount++;
+			}
+			
+			
+			double MTTR = failcount/stepCount;
+			double MTBRF = repairCount/stepCount;
+			
+			double LFR = MTTR/(MTTR+MTBRF);
+			
+			edges.get(i).failRate = LFR;
+			
+		}
+			
+		
+	}
+	
+	public int AFR() {
+		
+		int con = 0;
+		int conlink = 0;
+		
+		for (int i = 0; i < edges.size(); i++) {
+			
+			 con += edges.get(i).sharedConns;
+			 conlink += (edges.get(i).sharedConns * edges.get(i).failRate);
+			
+		}
+		
+		if(con ==0)
+			return 1;
+		return conlink/con;
+	}
 	
 }

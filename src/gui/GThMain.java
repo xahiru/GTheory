@@ -61,9 +61,12 @@ public class GThMain implements ActionListener {
 	Game game;
 //	boolean menuadded =false;
 	JTextField txtNumOfClients;
+	JLabel lblSC;
+	JLabel lblStId ;
+	JLabel lbldefStrCost;
 	
-	JComboBox<String> comboBox_1;
-	JComboBox<String> comboBox;
+	JComboBox<String> comboBoxDefence;
+	JComboBox<String> comboBoxOffence;
 	
 	static GThMain window;
 
@@ -97,7 +100,7 @@ public class GThMain implements ActionListener {
 	 */
 	private void initialize() {
 
-		 game = new Game(200,1,1,3,2);
+		 game = new Game(200,5,3,2,1);
 		frame = new JFrame();
 		menuBar = new JMenuBar();
 		
@@ -253,24 +256,15 @@ public class GThMain implements ActionListener {
 		JLabel lblNewLabel_3 = new JLabel("Attack Strategy");
 		panel_3.add(lblNewLabel_3, "2, 8, left, default");
 		
-		 comboBox = new JComboBox();
-		panel_3.add(comboBox, "4, 8, fill, default");
+		 comboBoxOffence = new JComboBox();
+		panel_3.add(comboBoxOffence, "4, 8, fill, default");
 		
 		JLabel lblDefenceStrategy = new JLabel("Defence Strategy");
 		panel_3.add(lblDefenceStrategy, "2, 10, left, default");
 		
-		comboBox_1 = new JComboBox();
-		
-		
-//		JComboBox<String> comboLanguage = new JComboBox<String>();
-		 
-		// add items to the combo box
-//		comboLanguage.addItem("English");
-//		comboLanguage.addItem("French");
-//		comboLanguage.addItem("Spanish");
-//		comboLanguage.addItem("Japanese");
-//		comboLanguage.addItem("Chinese");
-		panel_3.add(comboBox_1, "4, 10, fill, default");
+		comboBoxDefence = new JComboBox();
+//		comboBox_1.addItemListener(this);
+		panel_3.add(comboBoxDefence, "4, 10, fill, default");
 		
 		JLabel lblNewLabel = new JLabel("Connections");
 		panel_3.add(lblNewLabel, "2, 12, left, center");
@@ -283,7 +277,38 @@ public class GThMain implements ActionListener {
 		JPanel panel_7 = new JPanel();
 		panel_7.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Results", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_2.add(panel_7, BorderLayout.CENTER);
-		panel_7.setLayout(new BoxLayout(panel_7, BoxLayout.X_AXIS));
+		panel_7.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
+		
+		JLabel lblShareconnections = new JLabel("ShareConnections");
+		panel_7.add(lblShareconnections, "2, 2");
+		
+		 lblSC = new JLabel("0");
+		panel_7.add(lblSC, "6, 2");
+		
+		JLabel lblBestDefStrategy = new JLabel("Best Def Strategy");
+		panel_7.add(lblBestDefStrategy, "2, 4");
+		
+		 lblStId = new JLabel("St ID");
+		panel_7.add(lblStId, "6, 4");
+		
+		JLabel lblCost = new JLabel("Cost");
+		panel_7.add(lblCost, "2, 6");
+		
+		 lbldefStrCost = new JLabel("0");
+		panel_7.add(lbldefStrCost, "6, 6");
 		
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4, BorderLayout.SOUTH);
@@ -302,6 +327,19 @@ public class GThMain implements ActionListener {
 		tabbedPane.addTab("New tab", null, panel_6, null);
 		
 		
+		game.addRandDS(5,3);
+
+		
+		game.addRandOS(2, 3);
+		
+		createComboModel();
+		
+		createComboModel2();
+		
+		
+		
+		displayGraph(game.getMainGraph());
+		
 	
 
 	}
@@ -311,53 +349,44 @@ public class GThMain implements ActionListener {
 
 //		 new NodeWindow().setVisible(true);
 //		 System.out.print("hello");
+		 
 		 if(e.getSource().equals(btnRun)) {
 			 
 //			 System.out.print("btnRun");
 			 
+//			 comboBoxOffence.getSelectedIndex();
+//			 comboBoxDefence.getSelectedIndex();
+			 
+//			 System.out.println(game.offence.get(comboBoxOffence.getSelectedIndex()).size());
+			 game.play( comboBoxOffence.getSelectedIndex(), comboBoxDefence.getSelectedIndex());
+			 
+			 
        
 			 
-//			 System.out.print("stlist size:"+st.getParticipants().size());
-//			 
-//			 for (Iterator iterator = st.getParticipants().iterator(); iterator.hasNext();) {
-//				GThNode node = (GThNode) iterator.next();
-//				System.out.print("\n"+node.getId());
-//				
-//			}
-			 
+	
 			 displayGraph(game.getMainGraph());
-//			 displayGraph(graph);
+			 
+			 lblSC.setText(Integer.toString(game.SC_D));
+			 lblStId.setText(Integer.toString(game.bestDefenceIndex));
+			 lbldefStrCost.setText(Double.toString(game.bestDefence.calculateCost()));
+			 
+			 
+
 		 }
 		 
-		 if(e.getSource().equals(btnStrategy)) {
-			 
-//			 int clients = Integer.valueOf(txtNumOfClients.getText());
-//			 int servers = Integer.valueOf(txtNumOfServers.getText());
-////			 game = new Game(2, 5, 1);
-//			 game.setNumClients(clients);
-//			 game.setNumServers(servers);
-//			 game.setNumNodes(game.getNumClients()+game.getNumServers());
-////			 game.initGraph();
-//			 graph =	 game.getGraph(); 
+//		 if(e.getSource().equals(btnStrategy)) {
+//
+//			 new NodeWindow().setVisible(true);
 //			 
-//				
-////				graph =	game.testGraph();
-////				game.directedGraph();
-////				graph =	game.directedGraph();
-//		
-//			displayGraph(graph);
-			 
-			 new NodeWindow().setVisible(true);
-			 
-			
-			 
-		 }
-		 
-		 if(e.getSource().equals(btnEdge)) {
-			
-			 graph = game.getGraph();
-			 displayGraph(graph);
-		 }
+//			
+//			 
+//		 }
+//		 
+//		 if(e.getSource().equals(btnEdge)) {
+//			
+//			 graph = game.getGraph();
+//			 displayGraph(graph);
+//		 }
 		
 			 
 			 
@@ -433,11 +462,9 @@ public class GThMain implements ActionListener {
 			 dfsIndext.addElement("StrategyList"+Integer.toString(i) +": "+ game.defence.get(i).size());
 		}
 		 
-		
-		 
-//		return dfsIndext;
-		 comboBox_1.setModel(new DefaultComboBoxModel(dfsIndext));
-//		 comboBox_1 = new JComboBox<String>(dfsIndext);
+
+		 comboBoxDefence.setModel(new DefaultComboBoxModel(dfsIndext));
+
 			 }
 	 
 	 
@@ -451,11 +478,8 @@ public class GThMain implements ActionListener {
 			 ofsIndext.addElement("Offense"+Integer.toString(i) +": "+ game.offence.get(i).size());
 		}
 		 
-		
-		 
-//		return dfsIndext;
-		 comboBox.setModel(new DefaultComboBoxModel(ofsIndext));
-//		 comboBox_1 = new JComboBox<String>(dfsIndext);
+		 comboBoxOffence.setModel(new DefaultComboBoxModel(ofsIndext));
+
 			 }
 	
 

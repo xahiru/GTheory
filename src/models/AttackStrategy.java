@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.TimerTask;
 
-public class AttackStrategy extends TimerTask {
+public class AttackStrategy extends Strategy {
 	
 	private Random randomGenerator;
 	private double cost;
@@ -163,15 +163,15 @@ public class AttackStrategy extends TimerTask {
 		return attackChain;
 	}
 
-@Override
-public void run() {
-	try {
-		Thread.sleep(2000);
-	} catch (InterruptedException e) {
-		e.printStackTrace();
-	}
-	
-}
+//@Override
+//public void run() {
+//	try {
+//		Thread.sleep(2000);
+//	} catch (InterruptedException e) {
+//		e.printStackTrace();
+//	}
+//	
+//}
 
  public double calculateCost() {
 	 

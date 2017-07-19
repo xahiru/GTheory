@@ -81,6 +81,8 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 	private JLabel lblVul;
 	private JLabel lblVul_1;
 	private JTextField txtVulClient;
+	
+	private boolean init= false;
 
 
 	/**
@@ -136,6 +138,7 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		innerpanel1.add(lblNewLabel, "2, 2, left, default");
 		
 		txtServers = new JTextField();
+		txtServers.setText("2");
 		innerpanel1.add(txtServers, "4, 2, fill, default");
 		txtServers.setColumns(10);
 		
@@ -143,6 +146,7 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		innerpanel1.add(lblVul, "6, 2, right, default");
 		
 		textVulServer = new JTextField();
+		textVulServer.setText("1");
 		innerpanel1.add(textVulServer, "8, 2, fill, default");
 		textVulServer.setColumns(10);
 		
@@ -150,6 +154,7 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		innerpanel1.add(lblNewLabel_1, "2, 4, left, default");
 		
 		txtClients = new JTextField();
+		txtClients.setText("4");
 		innerpanel1.add(txtClients, "4, 4, fill, default");
 		txtClients.setColumns(10);
 		
@@ -159,12 +164,14 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		innerpanel1.add(lblVul_1, "6, 4, right, default");
 		
 		txtVulClient = new JTextField();
+		txtVulClient.setText("2");
 		innerpanel1.add(txtVulClient, "8, 4, fill, default");
 		txtVulClient.setColumns(10);
 		JLabel lblMaxSharedConnections = new JLabel( "<html>" + twoLines.replaceAll("\\n", "<br>") + "</html>");
 		innerpanel1.add(lblMaxSharedConnections, "2, 6, right, default");
 		
 		txtMaxsc = new JTextField();
+		txtMaxsc.setText("35");
 		innerpanel1.add(txtMaxsc, "4, 6, fill, default");
 		txtMaxsc.setColumns(10);
 		panel.add(innerpanel2);
@@ -259,6 +266,9 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		
 		if(e.getSource().equals(btnUpdate)) {
 			
+			if(!init)
+				btnInit.doClick();
+			
 			setVisible(false);
 			g.setGraph(g.createCompeletGraph());
 			
@@ -269,11 +279,7 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 			GThMain.window.textTotalConnections.setText(Integer.toString(g.getTotalNumConnections()));
 //			GThMain.window.btnRun.
 			GThMain.window.game.addRandDS(5,3);
-//			GThMain.window.game.addRandDS(3);
-//			GThMain.window.game.addRandDS(2);
-//			GThMain.window.game.addRandDS(1);
-//			GThMain.window.game.addRandDS(3);
-//			GThMain.window.game.addRandDS(3);
+
 			
 			GThMain.window.game.addRandOS(2, 3);
 			
@@ -295,6 +301,7 @@ public class GThNetwork extends JFrame implements ActionListener, TableModelList
 		
 		if(e.getSource().equals(btnInit)) {
 			
+			init = true;
 
 			int clients = Integer.valueOf(txtClients.getText());
 			int servers = Integer.valueOf(txtServers.getText());
